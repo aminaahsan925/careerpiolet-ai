@@ -12,16 +12,20 @@ for (const [key, value] of Object.entries(loadedEnv)) {
   if (!(key in process.env)) process.env[key] = value;
 }
 
-// Keep local previews and Vercel on the same supported Node runtime.
-const nitroConfig = {
-  preset: "vercel",
-  vercel: {
-    functions: { runtime: "nodejs20.x" },
-  },
+// Use "node-server" preset for deployment on any VPS / cloud (Alibaba ECS, etc.)
+// Switch to "vercel" or "cloudflare" for those specific platforms.
+const DEPLOY_TARGET = process.env["DEPLOY_TARGET"] || "vercel";
+
+const nitroConfig: Record<string, unknown> = {
+  preset: DEPLOY_TARGET,
   rollupConfig: {
     output: { inlineDynamicImports: true },
   },
 };
+
+if (DEPLOY_TARGET === "vercel") {
+  nitroConfig.vercel = { functions: { runtime: "nodejs20.x" } };
+}
 
 export default defineConfig({
   tanstackStart: {
