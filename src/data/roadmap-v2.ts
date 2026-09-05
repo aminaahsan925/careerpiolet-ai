@@ -429,8 +429,10 @@ export function useSubmitMcq() {
     },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: DAILY_WORK_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: LEARNING_PATHS_QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ROADMAP_PROGRESS_QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ROADMAP_NOTIFICATIONS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ["current-user"] });
     },
   });
 }

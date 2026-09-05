@@ -31,6 +31,7 @@ import {
   useSubmitMcq,
   type DailyWork,
   type LearningPath,
+  type McqAttemptResult,
 } from "@/data/roadmap-v2";
 import { cn } from "@/lib/utils";
 
@@ -89,12 +90,7 @@ function LearningPathCard({ path }: { path: LearningPath }) {
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
   const [quizDayId, setQuizDayId] = useState("");
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [quizResult, setQuizResult] = useState<{
-    score: number;
-    passed: boolean;
-    correctCount: number;
-    totalQuestions: number;
-  } | null>(null);
+  const [quizResult, setQuizResult] = useState<McqAttemptResult | null>(null);
   const { data: days } = useDailyWork(expanded ? path.id : undefined);
   const dayList = (Array.isArray(days) ? days : []) as DailyWork[];
   const completedDays = dayList.filter((d) => d.completed).length;
@@ -147,7 +143,6 @@ function LearningPathCard({ path }: { path: LearningPath }) {
           setQuizResult(result);
           if (result.passed) {
             toast.success(`Assessment passed with ${result.score}%. Day complete.`);
-            setQuizDayId("");
           } else {
             toast.error(`You scored ${result.score}%. Review the topic and try again.`);
           }
@@ -391,39 +386,87 @@ function LearningPathCard({ path }: { path: LearningPath }) {
                                 <button
                                   key={key}
                                   type="button"
-                                  onClick={() =>
-                                    setAnswers((current) => ({ ...current, [question.id]: key }))
-                                  }
+                                  onClick={() => {
+                                    if (!quizResult)
+                                      setAnswers((current) => ({ ...current, [question.id]: key }));
+                                  }}
                                   className={cn(
                                     "rounded-lg border px-3 py-2 text-left text-[11.5px] transition-colors",
-                                    answers[question.id] === key
-                                      ? "border-terracotta bg-terracotta/10 text-foreground"
-                                      : "border-border text-muted-foreground hover:bg-muted/40",
+                                    quizResult?.results.find(
+                                      (result) => result.questionId === question.id,
+                                    )?.correctOption === key
+                                      ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                                      : quizResult?.results.find(
+                                            (result) => result.questionId === question.id,
+                                          )?.selectedOption === key
+                                        ? "border-rose-400 bg-rose-50 text-rose-800"
+                                        : answers[question.id] === key
+                                          ? "border-terracotta bg-terracotta/10 text-foreground"
+                                          : "border-border text-muted-foreground hover:bg-muted/40",
                                   )}
                                 >
                                   <span className="mr-1 font-bold uppercase">{key}.</span> {label}
                                 </button>
                               ))}
                             </div>
+                            {quizResult &&
+                              (() => {
+                                const result = quizResult.results.find(
+                                  (item) => item.questionId === question.id,
+                                );
+                                if (!result) return null;
+                                return (
+                                  <div
+                                    className={cn(
+                                      "mt-3 rounded-lg p-3 text-[11px] leading-relaxed",
+                                      result.correct
+                                        ? "bg-emerald-50 text-emerald-800"
+                                        : "bg-rose-50 text-rose-800",
+                                    )}
+                                  >
+                                    <p className="font-bold">
+                                      {result.correct
+                                        ? "Correct answer"
+                                        : `Correct answer: ${result.correctOption.toUpperCase()}`}
+                                    </p>
+                                    <p className="mt-1">{result.explanation}</p>
+                                  </div>
+                                );
+                              })()}
                             <p className="mt-2 text-[10.5px] text-muted-foreground">
                               {question.company_relevance}
                             </p>
                           </div>
                         );
                       })}
-                      <Button
-                        size="sm"
-                        className="rounded-lg bg-terracotta text-primary-foreground hover:bg-terracotta/90"
-                        disabled={submitMcq.isPending}
-                        onClick={submitAssessment}
-                      >
-                        {submitMcq.isPending ? (
-                          <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Check className="mr-2 h-3.5 w-3.5" />
-                        )}
-                        Submit assessment
-                      </Button>
+                      {!quizResult && (
+                        <Button
+                          size="sm"
+                          className="rounded-lg bg-terracotta text-primary-foreground hover:bg-terracotta/90"
+                          disabled={submitMcq.isPending}
+                          onClick={submitAssessment}
+                        >
+                          {submitMcq.isPending ? (
+                            <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Check className="mr-2 h-3.5 w-3.5" />
+                          )}
+                          Submit assessment
+                        </Button>
+                      )}
+                      {quizResult && !quizResult.passed && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="ml-2 rounded-lg text-[11px]"
+                          onClick={() => {
+                            setQuizResult(null);
+                            setAnswers({});
+                          }}
+                        >
+                          <RotateCcw className="mr-2 h-3.5 w-3.5" /> Try again
+                        </Button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -649,8 +692,8 @@ function RoadmapPage() {
             unlocked={
               totalPaths > 0 &&
               totalDays > 0 &&
-              completedPaths === totalPaths &&
-              completedDays === totalDays
+              completedPaths >= totalPaths &&
+              completedDays >= totalDays
             }
           />
         </div>
