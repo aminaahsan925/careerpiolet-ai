@@ -18,6 +18,9 @@ const DEPLOY_TARGET = process.env["DEPLOY_TARGET"] || "vercel";
 
 const nitroConfig: Record<string, unknown> = {
   preset: DEPLOY_TARGET,
+  externals: {
+    inline: ["tslib"],
+  },
   rollupConfig: {
     output: { inlineDynamicImports: true },
   },
