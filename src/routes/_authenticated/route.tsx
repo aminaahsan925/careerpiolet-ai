@@ -6,30 +6,39 @@ export const Route = createFileRoute("/_authenticated")({
   // Sessions live in localStorage, which the server cannot read.
   ssr: false,
   beforeLoad: async ({ location }) => {
-    const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) {
+    try {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        throw redirect({ to: "/auth", search: { redirect: location.pathname, reset: undefined } });
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarding_completed, current_status")
+        .eq("user_id", data.user.id)
+        .maybeSingle();
+
+      const onboarded = profile?.onboarding_completed === true;
+      const phase1Done = profile?.current_status != null;
+      const onOnboarding = location.pathname.startsWith("/onboarding");
+
+      // Need onboarding if: never completed original onboarding, OR
+      // legacy user who hasn't completed Phase 1 "Know Me" yet.
+      if ((!onboarded || !phase1Done) && !onOnboarding) {
+        throw redirect({ to: "/onboarding" });
+      }
+      // Returning users (onboarded + phase1Done) may freely access
+      // /onboarding to edit their "Know Me" profile — no redirect.
+
+      return { user: data.user };
+    } catch (err) {
+      // TanStack Router redirects have a `to` property — let them propagate.
+      if (err instanceof Error && "to" in err) throw err;
+      // Any other error (missing env vars, Supabase init failure, network)
+      // should gracefully redirect to the auth page instead of showing a 500.
+      console.error("[CareerPilot] Auth check failed, redirecting to /auth:", err);
       throw redirect({ to: "/auth", search: { redirect: location.pathname, reset: undefined } });
     }
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("onboarding_completed, current_status")
-      .eq("user_id", data.user.id)
-      .maybeSingle();
-
-    const onboarded = profile?.onboarding_completed === true;
-    const phase1Done = profile?.current_status != null;
-    const onOnboarding = location.pathname.startsWith("/onboarding");
-
-    // Need onboarding if: never completed original onboarding, OR
-    // legacy user who hasn't completed Phase 1 "Know Me" yet.
-    if ((!onboarded || !phase1Done) && !onOnboarding) {
-      throw redirect({ to: "/onboarding" });
-    }
-    // Returning users (onboarded + phase1Done) may freely access
-    // /onboarding to edit their "Know Me" profile — no redirect.
-
-    return { user: data.user };
   },
   component: () => <Outlet />,
   pendingComponent: AuthPending,
