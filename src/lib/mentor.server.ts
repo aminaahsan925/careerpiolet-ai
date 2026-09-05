@@ -144,7 +144,11 @@ export async function runMentorTurn(
       .order("created_at", { ascending: false })
       .limit(MENTOR_HISTORY_LIMIT),
   ]);
-  if (historyRes.error) throw historyRes.error;
+  if (historyRes.error) {
+    // Conversation history is useful but should not prevent a fresh mentor
+    // answer when the optional chat table has not reached production yet.
+    console.warn("[CareerPilot][mentor] chat history unavailable:", historyRes.error.message);
+  }
 
   const history = (historyRes.data ?? []).slice().reverse();
 
@@ -170,7 +174,10 @@ export async function runMentorTurn(
     { user_id: userId, role: "user", content: trimmed },
     { user_id: userId, role: "assistant", content: reply },
   ]);
-  if (error) throw error;
+  if (error) {
+    // Do not discard a useful answer because history persistence is not ready.
+    console.warn("[CareerPilot][mentor] could not save chat history:", error.message);
+  }
 
   return { reply };
 }

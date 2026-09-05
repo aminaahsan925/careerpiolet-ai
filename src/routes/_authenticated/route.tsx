@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, isRedirect, Outlet, redirect } from "@tanstack/react-router";
 
 import { supabase } from "@/integrations/supabase/client";
 
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_authenticated")({
       return { user: data.user };
     } catch (err) {
       // TanStack Router redirects have a `to` property — let them propagate.
-      if (err instanceof Error && "to" in err) throw err;
+      if (isRedirect(err)) throw err;
       // Any other error (missing env vars, Supabase init failure, network)
       // should gracefully redirect to the auth page instead of showing a 500.
       console.error("[CareerPilot] Auth check failed, redirecting to /auth:", err);

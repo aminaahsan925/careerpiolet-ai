@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { motion } from "motion/react";
 import {
   Sparkles,
@@ -129,6 +130,16 @@ const BEFORE_AFTER = [
 ];
 
 function Landing() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Some Supabase email templates redirect to the site root. Preserve the
+    // recovery token and move the user to the password form immediately.
+    if (window.location.hash.includes("type=recovery")) {
+      void navigate({ to: "/auth", search: { reset: true, redirect: undefined } });
+    }
+  }, [navigate]);
+
   return (
     <div className="min-h-screen bg-background scroll-smooth">
       {/* HEADER */}

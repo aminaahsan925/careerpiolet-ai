@@ -32,11 +32,24 @@ const HIGHLIGHTS = [
   "Guidance that adapts as you grow",
 ];
 
+function getPublicAuthOrigin() {
+  const configuredOrigin = import.meta.env["VITE_PUBLIC_APP_URL"];
+  if (typeof configuredOrigin === "string" && configuredOrigin.trim()) {
+    return configuredOrigin.trim().replace(/\/+$/, "");
+  }
+
+  return window.location.origin;
+}
+
+function isRecoveryUrl() {
+  return typeof window !== "undefined" && window.location.hash.includes("type=recovery");
+}
+
 function AuthPage() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const [mode, setMode] = useState<"signin" | "signup" | "forgot" | "reset">(
-    search.reset ? "reset" : "signin",
+    search.reset || isRecoveryUrl() ? "reset" : "signin",
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,7 +59,7 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (search.reset) setMode("reset");
+    if (search.reset || isRecoveryUrl()) setMode("reset");
 
     const {
       data: { subscription },
@@ -75,7 +88,7 @@ function AuthPage() {
     try {
       if (mode === "forgot") {
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth?reset=1`,
+          redirectTo: `${getPublicAuthOrigin()}/auth?reset=1`,
         });
         if (resetError) throw resetError;
         setNotice("Check your inbox for a password reset link.");
@@ -101,7 +114,7 @@ function AuthPage() {
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: { emailRedirectTo: `${getPublicAuthOrigin()}/auth` },
         });
         if (signUpError) throw signUpError;
         if (!data.user) throw new Error("Supabase did not return a created user.");

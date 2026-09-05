@@ -33,8 +33,22 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 export const requireSupabaseAuth = createMiddleware({ type: "function" }).server(
   async ({ next }) => {
-    const SUPABASE_URL = process.env["SUPABASE_URL"];
-    const SUPABASE_PUBLISHABLE_KEY = process.env["SUPABASE_PUBLISHABLE_KEY"];
+    // These are public Supabase values. Keep the fallback aligned with the
+    // browser client so server functions still authenticate when Vercel's
+    // public environment variables were not copied into a deployment.
+    const KNOWN_URL = "https://aidbyvtajfljwswfktvw.supabase.co";
+    const KNOWN_KEY = "sb_publishable_W9D0reLquthx320zpxRkiQ_5U7Y0S4P";
+    const rawUrl = process.env["SUPABASE_URL"];
+    const rawKey = process.env["SUPABASE_PUBLISHABLE_KEY"];
+    const SUPABASE_URL =
+      typeof rawUrl === "string" && /^https:\/\/[^\s]+\.supabase\.co\/?$/.test(rawUrl)
+        ? rawUrl
+        : KNOWN_URL;
+    const SUPABASE_PUBLISHABLE_KEY =
+      typeof rawKey === "string" &&
+      (rawKey.startsWith("sb_publishable_") || rawKey.startsWith("eyJ"))
+        ? rawKey
+        : KNOWN_KEY;
 
     if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
       const missing = [

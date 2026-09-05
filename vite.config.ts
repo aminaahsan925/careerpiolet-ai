@@ -27,7 +27,7 @@ const nitroConfig: Record<string, unknown> = {
 };
 
 if (DEPLOY_TARGET === "vercel") {
-  nitroConfig.vercel = { functions: { runtime: "nodejs22.x" } };
+  nitroConfig["vercel"] = { functions: { runtime: "nodejs22.x" } };
 }
 
 export default defineConfig({
