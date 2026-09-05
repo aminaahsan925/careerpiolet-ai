@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="980" viewBox="0 0 1400 980" role="img" aria-labelledby="title desc">
+  <title id="title">CareerPilot Roadmap Completion Certificate</title>
+  <desc id="desc">A premium completion certificate for a CareerPilot student.</desc>
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbfaf7"/>
+      <stop offset="1" stop-color="#f0ece4"/>
+    </linearGradient>
+    <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#172126"/>
+      <stop offset="1" stop-color="#27343a"/>
+    </linearGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0H0V28" fill="none" stroke="#d7d0c4" stroke-width="1" opacity=".28"/>
+    </pattern>
+  </defs>
+
+  <rect width="1400" height="980" fill="#e4ded3"/>
+  <rect x="55" y="55" width="1290" height="870" rx="28" fill="url(#paper)" stroke="#172126" stroke-width="4"/>
+  <rect x="78" y="78" width="1244" height="824" rx="18" fill="none" stroke="#c96f52" stroke-width="2"/>
+  <rect x="78" y="78" width="1244" height="824" rx="18" fill="url(#grid)"/>
+
+  <path d="M78 78h1244v206H78z" fill="url(#ink)"/>
+  <path d="M78 284h1244" stroke="#c96f52" stroke-width="7"/>
+  <circle cx="700" cy="177" r="54" fill="#c96f52"/>
+  <path d="M700 137l13 25 28 4-20 20 5 28-26-13-26 13 5-28-20-20 28-4z" fill="#fffaf4"/>
+  <text x="700" y="325" text-anchor="middle" font-family="Georgia, serif" font-size="24" letter-spacing="8" fill="#c96f52">CAREERPILOT AI</text>
+  <text x="700" y="390" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="58" fill="#172126">Roadmap Completion</text>
+  <text x="700" y="435" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" letter-spacing="5" fill="#6c746f">VERIFIED LEARNING ACHIEVEMENT</text>
+  <text x="700" y="530" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="52" fill="#c96f52">Alex Morgan</text>
+  <path d="M380 550h640" stroke="#c96f52" stroke-width="2" opacity=".5"/>
+  <text x="700" y="594" text-anchor="middle" font-family="Arial, sans-serif" font-size="21" fill="#39464a">has completed the CareerPilot preparation path for</text>
+  <text x="700" y="640" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="29" fill="#172126">Full-Stack Engineer</text>
+  <text x="700" y="681" text-anchor="middle" font-family="Arial, sans-serif" font-size="19" fill="#6c746f">with company-specific market, project, and interview preparation</text>
+
+  <g transform="translate(310 742)">
+    <rect width="230" height="72" rx="12" fill="#fffdf9" stroke="#d7d0c4"/>
+    <text x="115" y="29" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6c746f">LEARNING PATHS</text>
+    <text x="115" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="20" fill="#172126">4 / 4 complete</text>
+  </g>
+  <g transform="translate(585 742)">
+    <rect width="230" height="72" rx="12" fill="#fffdf9" stroke="#d7d0c4"/>
+    <text x="115" y="29" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6c746f">PRACTICE DAYS</text>
+    <text x="115" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="20" fill="#172126">30 / 30 complete</text>
+  </g>
+  <g transform="translate(860 742)">
+    <rect width="230" height="72" rx="12" fill="#fffdf9" stroke="#d7d0c4"/>
+    <text x="115" y="29" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6c746f">CREDENTIAL ID</text>
+    <text x="115" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="20" fill="#172126">CP-8A42F10C</text>
+  </g>
+
+  <text x="700" y="866" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" letter-spacing="2" fill="#8a918c">GENERATED FROM COMPLETED ROADMAP EVIDENCE</text>
+</svg>

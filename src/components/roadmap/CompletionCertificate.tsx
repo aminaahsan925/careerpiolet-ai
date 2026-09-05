@@ -49,7 +49,12 @@ export function CompletionCertificate({
           </div>
         </div>
         {unlocked && (
-          <Button variant="outline" size="sm" className="rounded-lg text-[11px]" onClick={() => window.print()}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-lg text-[11px]"
+            onClick={() => window.print()}
+          >
             <Printer className="mr-1.5 h-3.5 w-3.5" /> Save PDF
           </Button>
         )}
@@ -68,19 +73,42 @@ export function CompletionCertificate({
               {targetCompany ? ` at ${targetCompany}` : ""}.
             </p>
             <div className="mt-4 grid grid-cols-2 gap-2 text-left text-[11px]">
-              <div className="rounded-lg bg-card p-2.5"><p className="text-muted-foreground">Learning paths</p><p className="mt-0.5 font-bold">{completedPaths}/{totalPaths}</p></div>
-              <div className="rounded-lg bg-card p-2.5"><p className="text-muted-foreground">Practice days</p><p className="mt-0.5 font-bold">{completedDays}/{totalDays}</p></div>
+              <div className="rounded-lg bg-card p-2.5">
+                <p className="text-muted-foreground">Learning paths</p>
+                <p className="mt-0.5 font-bold">
+                  {completedPaths}/{totalPaths}
+                </p>
+              </div>
+              <div className="rounded-lg bg-card p-2.5">
+                <p className="text-muted-foreground">Practice days</p>
+                <p className="mt-0.5 font-bold">
+                  {completedDays}/{totalDays}
+                </p>
+              </div>
             </div>
-            <p className="mt-4 text-[10px] font-semibold tracking-wider text-muted-foreground">Credential ID: {code}</p>
+            <p className="mt-4 text-[10px] font-semibold tracking-wider text-muted-foreground">
+              Credential ID: {code}
+            </p>
           </div>
         ) : (
           <div className="space-y-3">
             <p className="text-[12px] leading-relaxed text-muted-foreground">
-              Finish every learning path and its assessment gates to unlock a recruiter-ready completion certificate.
+              Finish every learning path and its assessment gates to unlock a recruiter-ready
+              completion certificate.
             </p>
             <div className="space-y-2 text-[11.5px]">
-              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-muted-foreground" /><span>{completedPaths}/{totalPaths || "?"} learning paths complete</span></div>
-              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-muted-foreground" /><span>{completedDays}/{totalDays || "?"} practice days complete</span></div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                <span>
+                  {completedPaths}/{totalPaths || "?"} learning paths complete
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                <span>
+                  {completedDays}/{totalDays || "?"} practice days complete
+                </span>
+              </div>
             </div>
           </div>
         )}

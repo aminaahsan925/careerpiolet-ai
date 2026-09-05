@@ -641,11 +641,17 @@ function RoadmapPage() {
           <CompletionCertificate
             studentName={user?.fullName ?? "CareerPilot student"}
             targetRole={user?.goal ?? user?.role ?? "your target role"}
+            targetCompany={user?.applications?.[0]?.company ?? null}
             completedPaths={completedPaths}
             totalPaths={totalPaths}
             completedDays={completedDays}
             totalDays={totalDays}
-            unlocked={totalPaths > 0 && totalDays > 0 && completedPaths === totalPaths && completedDays === totalDays}
+            unlocked={
+              totalPaths > 0 &&
+              totalDays > 0 &&
+              completedPaths === totalPaths &&
+              completedDays === totalDays
+            }
           />
         </div>
       </div>
