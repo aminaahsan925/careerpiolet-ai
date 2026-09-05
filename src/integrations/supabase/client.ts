@@ -34,14 +34,23 @@ function createSupabaseClient() {
   // Fall back to process.env for SSR, then to known public Supabase values.
   // The URL and publishable key are PUBLIC (used in browser JS by design);
   // security is enforced by Supabase Row-Level Security policies.
-  const SUPABASE_URL =
-    import.meta.env["VITE_SUPABASE_URL"] ||
-    process.env["SUPABASE_URL"] ||
-    "https://aidbyvtajfljwswfktvw.supabase.co";
-  const SUPABASE_PUBLISHABLE_KEY =
-    import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] ||
-    process.env["SUPABASE_PUBLISHABLE_KEY"] ||
-    "sb_publishable_W9D0reLquthx320zpxRkiQ_5U7Y0S4P";
+
+  // Hardcoded known-good values used when env vars are missing or corrupted.
+  const KNOWN_URL = "https://aidbyvtajfljwswfktvw.supabase.co";
+  const KNOWN_KEY = "sb_publishable_W9D0reLquthx320zpxRkiQ_5U7Y0S4P";
+
+  // Validate that a value looks like a real Supabase URL / key
+  // (guards against corrupted env-var values injected at build time).
+  const isValidUrl = (v: unknown): v is string =>
+    typeof v === "string" && v.startsWith("https://") && v.includes(".supabase.co");
+  const isValidKey = (v: unknown): v is string =>
+    typeof v === "string" && v.length > 10 && (v.startsWith("sb_publishable_") || v.startsWith("sb_secret_") || v.startsWith("eyJ"));
+
+  const rawUrl = import.meta.env["VITE_SUPABASE_URL"] || process.env["SUPABASE_URL"];
+  const rawKey = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] || process.env["SUPABASE_PUBLISHABLE_KEY"];
+
+  const SUPABASE_URL = isValidUrl(rawUrl) ? rawUrl : KNOWN_URL;
+  const SUPABASE_PUBLISHABLE_KEY = isValidKey(rawKey) ? rawKey : KNOWN_KEY;
 
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
     const missing = [
