@@ -18,6 +18,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { AppLayout } from "@/components/app/AppLayout";
+import { CompletionCertificate } from "@/components/roadmap/CompletionCertificate";
 import { Button } from "@/components/ui/button";
 import { useCurrentUser } from "@/data/user";
 import {
@@ -636,6 +637,16 @@ function RoadmapPage() {
                 : "Generate a roadmap after running your diagnosis"}
             </p>
           </div>
+
+          <CompletionCertificate
+            studentName={user?.fullName ?? "CareerPilot student"}
+            targetRole={user?.goal ?? user?.role ?? "your target role"}
+            completedPaths={completedPaths}
+            totalPaths={totalPaths}
+            completedDays={completedDays}
+            totalDays={totalDays}
+            unlocked={totalPaths > 0 && totalDays > 0 && completedPaths === totalPaths && completedDays === totalDays}
+          />
         </div>
       </div>
     </AppLayout>

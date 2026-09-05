@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   BarChart3,
+  BrainCircuit,
   ChevronDown,
   FileText,
   LayoutGrid,
@@ -26,6 +27,7 @@ const NAV: NavItem[] = [
   { label: "Dashboard", icon: LayoutGrid, to: "/dashboard" },
   { label: "Diagnosis", icon: Stethoscope, to: "/diagnosis" },
   { label: "Recruiter Audit", icon: UserCheck, to: "/recruiter" },
+  { label: "Interview Prep", icon: BrainCircuit, to: "/jobmirror" },
   { label: "Flight Plan", icon: Plane, to: "/flightplan" },
   { label: "Future Tech Trends", icon: Sparkles, to: "/future-tech" },
   { label: "Roadmap", icon: Map, to: "/roadmap" },
