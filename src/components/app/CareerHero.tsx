@@ -64,11 +64,11 @@ export function CareerHero({ personImage, className, compact }: CareerHeroProps)
           transition={{ delay: 0.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           src={personImage}
           alt="Career hero"
-          className="absolute bottom-0 right-[4%] z-10 h-[86%] w-auto object-contain object-bottom grayscale contrast-110 drop-shadow-[0_30px_40px_rgba(0,0,0,0.45)]"
+          className="absolute bottom-0 right-[4%] z-10 hidden h-[86%] w-auto object-contain object-bottom grayscale contrast-110 drop-shadow-[0_30px_40px_rgba(0,0,0,0.45)] sm:block"
         />
       ) : null}
 
-      <div className="relative z-20 max-w-[62%] px-7 py-8 sm:px-10 sm:py-10">
+      <div className="relative z-20 max-w-full px-7 py-8 sm:max-w-[62%] sm:px-10 sm:py-10">
         <h2 className="editorial-title text-[clamp(2.1rem,5.4vw,4rem)]">
           <motion.span
             custom={0}
