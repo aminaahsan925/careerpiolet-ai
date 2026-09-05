@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build && nitro build",
+    "build": "vite build",
     "vercel-build": "npm run build",
-    "start": "node .output/server/index.mjs",
+    "start": "npx srvx --prod --static=.vercel/output/static .vercel/output/functions/__server.func/index.mjs",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",

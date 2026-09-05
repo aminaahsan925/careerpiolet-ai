@@ -12,10 +12,28 @@ for (const [key, value] of Object.entries(loadedEnv)) {
   if (!(key in process.env)) process.env[key] = value;
 }
 
+// Keep local previews and Vercel on the same supported Node runtime.
+const nitroConfig = {
+  preset: "vercel",
+  vercel: {
+    functions: { runtime: "nodejs20.x" },
+  },
+  rollupConfig: {
+    output: { inlineDynamicImports: true },
+  },
+};
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
+  },
+  // Vercel must receive a Vercel function, not the default Cloudflare bundle.
+  nitro: nitroConfig,
+  vite: {
+    build: {
+      chunkSizeWarningLimit: 5000,
+    },
   },
 });
