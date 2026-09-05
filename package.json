@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
-    "postbuild": "mkdir -p .vercel/output/functions/__server.func/node_modules/tslib && cp -r node_modules/tslib/* .vercel/output/functions/__server.func/node_modules/tslib/ 2>/dev/null; true",
-    "vercel-build": "npm run build",
+    "vercel-build": "npm run build && node postbuild.mjs",
     "start": "npx srvx --prod --static=.vercel/output/static .vercel/output/functions/__server.func/index.mjs",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",

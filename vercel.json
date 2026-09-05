@@ -1,6 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "tanstack-start",
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build && node postbuild.mjs",
   "installCommand": "npm install"
 }
