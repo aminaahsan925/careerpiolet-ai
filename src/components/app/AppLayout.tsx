@@ -16,7 +16,7 @@ export function AppLayout({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen min-w-0 overflow-x-hidden bg-background">
       <aside className="sticky top-0 hidden h-screen lg:block">
         <AppSidebar />
       </aside>
@@ -35,9 +35,9 @@ export function AppLayout({
         </div>
       ) : null}
 
-      <div className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <div className="min-w-0 flex-1 overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         {(title || subtitle) && (
-          <header className="flex flex-wrap items-start gap-4">
+          <header className="flex min-w-0 flex-wrap items-start gap-4">
             <button
               type="button"
               aria-label="Open navigation"
@@ -56,7 +56,7 @@ export function AppLayout({
               {subtitle && <p className="mt-1 text-[13.5px] text-muted-foreground">{subtitle}</p>}
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex shrink-0 items-center gap-3">
               <label className="hidden items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 shadow-card md:flex md:w-[300px] lg:w-[340px]">
                 <Search className="h-4 w-4 text-muted-foreground" />
                 <input

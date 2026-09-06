@@ -99,14 +99,14 @@ function MentorPage() {
     >
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
         <div className="card-surface flex min-h-[640px] flex-col p-0">
-          <div className="flex items-center justify-between border-b border-border px-6 py-4">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
+            <div className="flex min-w-0 items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-ink text-white">
                 <Sparkles className="h-4 w-4" />
               </span>
-              <div>
-                <p className="text-[14px] font-bold">Career Mentor</p>
-                <p className="text-[11.5px] text-muted-foreground">
+              <div className="min-w-0">
+                <p className="truncate text-[14px] font-bold">Career Mentor</p>
+                <p className="truncate text-[11.5px] text-muted-foreground">
                   Focused on {user?.goal ?? "your career goal"}
                 </p>
               </div>
@@ -116,7 +116,7 @@ function MentorPage() {
             </span>
           </div>
 
-          <div ref={scrollRef} className="flex-1 space-y-5 overflow-y-auto px-6 py-6">
+          <div ref={scrollRef} className="flex-1 space-y-5 overflow-y-auto px-4 py-6 sm:px-6">
             {messages.map((m, i) => (
               <motion.div
                 key={i}
@@ -162,7 +162,7 @@ function MentorPage() {
             ) : null}
           </div>
 
-          <div className="border-t border-border px-6 py-4">
+          <div className="border-t border-border px-4 py-4 sm:px-6">
             <div className="flex flex-wrap gap-2 pb-4">
               {SUGGESTIONS.slice(0, 3).map((s) => (
                 <button

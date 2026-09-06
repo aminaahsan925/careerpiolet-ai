@@ -68,7 +68,8 @@ function RolePicker({
       <div>
         <h3 className="font-display text-lg font-bold text-foreground">Target Role Selection</h3>
         <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-          Select any of the in-depth researched industry roles to mirror your skills against real market demands.
+          Select any of the in-depth researched industry roles to mirror your skills against real
+          market demands.
         </p>
       </div>
 
@@ -93,7 +94,7 @@ function RolePicker({
                 "rounded-xl px-4 py-2 text-xs font-semibold transition-all duration-200",
                 isActive
                   ? "bg-terracotta text-white shadow-lift"
-                  : "bg-secondary/80 text-foreground hover:bg-secondary border border-border"
+                  : "bg-secondary/80 text-foreground hover:bg-secondary border border-border",
               )}
             >
               {role.displayName}
@@ -120,8 +121,12 @@ function PakistanContext({ pakistan }: { pakistan: JobMirrorReport["pakistan"] }
             <Globe2 className="h-5 w-5" strokeWidth={1.8} />
           </div>
           <div>
-            <h3 className="font-display text-lg font-bold text-foreground">Market Research Dataset</h3>
-            <p className="text-xs text-muted-foreground">Verifiable hiring norms & entry paths for tech professionals.</p>
+            <h3 className="font-display text-lg font-bold text-foreground">
+              Market Research Dataset
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Verifiable hiring norms & entry paths for tech professionals.
+            </p>
           </div>
         </div>
 
@@ -141,7 +146,7 @@ function PakistanContext({ pakistan }: { pakistan: JobMirrorReport["pakistan"] }
                 "rounded-lg px-3 py-1.5 text-[11.5px] font-semibold transition",
                 dataTab === tab.id
                   ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {tab.label}
@@ -159,12 +164,19 @@ function PakistanContext({ pakistan }: { pakistan: JobMirrorReport["pakistan"] }
             exit={{ opacity: 0, y: -8 }}
             className="space-y-4"
           >
-            <h4 className="text-[13px] font-bold text-foreground">Verified Local Hiring Standards</h4>
+            <h4 className="text-[13px] font-bold text-foreground">
+              Verified Local Hiring Standards
+            </h4>
             {pakistan.hiringNorms.length > 0 ? (
               <div className="grid gap-3 sm:grid-cols-2">
                 {pakistan.hiringNorms.map((norm) => (
-                  <div key={norm.statement} className="rounded-xl border border-border/80 bg-background/50 p-4">
-                    <p className="text-[13px] leading-relaxed text-foreground font-medium">{norm.statement}</p>
+                  <div
+                    key={norm.statement}
+                    className="rounded-xl border border-border/80 bg-background/50 p-4"
+                  >
+                    <p className="text-[13px] leading-relaxed text-foreground font-medium">
+                      {norm.statement}
+                    </p>
                     <div className="mt-2 pt-2 border-t border-border/50">
                       <Cite citation={norm.citation} />
                     </div>
@@ -172,7 +184,9 @@ function PakistanContext({ pakistan }: { pakistan: JobMirrorReport["pakistan"] }
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground">No specific hiring norm data recorded for this role.</p>
+              <p className="text-xs text-muted-foreground">
+                No specific hiring norm data recorded for this role.
+              </p>
             )}
           </motion.div>
         )}
@@ -187,7 +201,9 @@ function PakistanContext({ pakistan }: { pakistan: JobMirrorReport["pakistan"] }
           >
             <div className="flex items-center gap-2">
               <Building2 className="h-4 w-4 text-terracotta" />
-              <h4 className="text-[13px] font-bold text-foreground">Primary Entry Software Houses & Agencies</h4>
+              <h4 className="text-[13px] font-bold text-foreground">
+                Primary Entry Software Houses & Agencies
+              </h4>
             </div>
             <p className="text-xs text-muted-foreground">
               Software houses identified in research as standard career launching pads:
@@ -213,30 +229,44 @@ function PakistanContext({ pakistan }: { pakistan: JobMirrorReport["pakistan"] }
             exit={{ opacity: 0, y: -8 }}
             className="space-y-4"
           >
-            <h4 className="text-[13px] font-bold text-foreground">Local Employers vs. International Remote Clients</h4>
+            <h4 className="text-[13px] font-bold text-foreground">
+              Local Employers vs. International Remote Clients
+            </h4>
             {pakistan.employerVsInternationalClient.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[500px] text-left text-xs">
                   <thead>
                     <tr className="border-b border-border">
-                      <th className="pb-2.5 font-bold uppercase tracking-wider text-muted-foreground">Dimension</th>
-                      <th className="pb-2.5 font-bold uppercase tracking-wider text-muted-foreground">Pakistani Employers</th>
-                      <th className="pb-2.5 font-bold uppercase tracking-wider text-terracotta">International Clients</th>
+                      <th className="pb-2.5 font-bold uppercase tracking-wider text-muted-foreground">
+                        Dimension
+                      </th>
+                      <th className="pb-2.5 font-bold uppercase tracking-wider text-muted-foreground">
+                        Pakistani Employers
+                      </th>
+                      <th className="pb-2.5 font-bold uppercase tracking-wider text-terracotta">
+                        International Clients
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {pakistan.employerVsInternationalClient.map((row) => (
                       <tr className="border-b border-border/60 last:border-0" key={row.dimension}>
                         <td className="py-3 font-semibold text-foreground">{row.dimension}</td>
-                        <td className="py-3 text-muted-foreground pr-4">{row.pakistaniEmployers}</td>
-                        <td className="py-3 font-medium text-foreground">{row.internationalClients}</td>
+                        <td className="py-3 text-muted-foreground pr-4">
+                          {row.pakistaniEmployers}
+                        </td>
+                        <td className="py-3 font-medium text-foreground">
+                          {row.internationalClients}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             ) : (
-              <p className="text-xs text-muted-foreground">Comparative matrix available for core technical roles.</p>
+              <p className="text-xs text-muted-foreground">
+                Comparative matrix available for core technical roles.
+              </p>
             )}
           </motion.div>
         )}
@@ -252,7 +282,10 @@ function PakistanContext({ pakistan }: { pakistan: JobMirrorReport["pakistan"] }
             <h4 className="text-[13px] font-bold text-foreground">Freelance Route Analysis</h4>
             <div className="grid gap-3 sm:grid-cols-2">
               {pakistan.freelanceReality.map((item) => (
-                <div key={item.statement} className="rounded-xl border border-border/80 bg-background/50 p-4">
+                <div
+                  key={item.statement}
+                  className="rounded-xl border border-border/80 bg-background/50 p-4"
+                >
                   <p className="text-[13px] leading-relaxed text-foreground">{item.statement}</p>
                   <div className="mt-2 pt-2 border-t border-border/50">
                     <Cite citation={item.citation} />
@@ -328,8 +361,8 @@ function FlightPlanPage() {
         />
 
         {/* ELEGANT TABS NAVIGATION BAR */}
-        <div className="card-surface p-2 sm:p-3">
-          <div className="flex flex-wrap gap-2">
+        <div className="card-surface overflow-hidden p-2 sm:p-3">
+          <div className="flex gap-2 overflow-x-auto pb-0.5">
             {[
               { id: "readiness", label: "01 Target & Readiness", icon: Target },
               { id: "skills", label: "02 Skill Mirror", icon: ListChecks },
@@ -345,10 +378,10 @@ function FlightPlanPage() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as FlightPlanTab)}
                   className={cn(
-                    "flex flex-1 min-w-[140px] items-center justify-center gap-2 rounded-xl px-4 py-3 text-[12.5px] font-semibold transition-all duration-200",
+                    "flex min-w-[180px] shrink-0 items-center justify-center gap-2 rounded-xl px-4 py-3 text-[12.5px] font-semibold transition-all duration-200 sm:min-w-0 sm:flex-1",
                     isActive
                       ? "bg-terracotta text-white shadow-lift"
-                      : "bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground"
+                      : "bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground",
                   )}
                 >
                   <Icon className="h-4 w-4" />

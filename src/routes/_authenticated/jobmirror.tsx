@@ -179,7 +179,7 @@ function InterviewPrepPage() {
                   </p>
                 </div>
               </div>
-              <div className="min-w-[190px] rounded-2xl border border-white/10 bg-white/[0.06] p-4">
+              <div className="w-full rounded-2xl border border-white/10 bg-white/[0.06] p-4 sm:w-auto sm:min-w-[190px]">
                 <div className="flex items-center justify-between text-[11px]">
                   <span className="text-white/55">Prep readiness</span>
                   <span className="font-bold text-terracotta">{readiness}%</span>
@@ -206,7 +206,7 @@ function InterviewPrepPage() {
                 id="interview-company"
                 value={company}
                 onChange={(event) => setCompany(event.target.value)}
-                className="rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-[12px] text-white outline-none"
+                className="w-full max-w-full rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-[12px] text-white outline-none sm:w-auto"
               >
                 <option value="__custom__" className="text-foreground">
                   Add my own company
@@ -228,7 +228,7 @@ function InterviewPrepPage() {
                   onChange={(event) => setCustomCompany(event.target.value)}
                   placeholder="Type any company"
                   aria-label="Custom company name"
-                  className="rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-[12px] text-white outline-none placeholder:text-white/35"
+                  className="w-full max-w-full rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-[12px] text-white outline-none placeholder:text-white/35 sm:w-auto"
                 />
               )}
               <span className="text-[11px] text-white/40">
