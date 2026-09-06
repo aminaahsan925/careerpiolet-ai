@@ -623,11 +623,12 @@ function DiagnosticResultsView({
           </div>
         </div>
 
-        <div className="pointer-events-none absolute bottom-7 right-7 z-10 hidden w-[270px] overflow-hidden rounded-2xl border border-white/20 bg-white p-2 shadow-2xl lg:block xl:right-12 xl:w-[310px]">
+        <div className="pointer-events-none absolute bottom-0 right-0 z-10 hidden h-[330px] w-[350px] lg:block xl:right-8 xl:h-[360px] xl:w-[390px]">
+          <div className="absolute bottom-8 right-8 h-56 w-56 rounded-full bg-terracotta/20 blur-3xl" />
           <img
             src="/careerpilot-learning-illustration.png"
             alt="Student learning career skills on a laptop"
-            className="h-auto w-full object-contain"
+            className="relative h-full w-full object-contain mix-blend-multiply opacity-90"
           />
         </div>
       </section>
