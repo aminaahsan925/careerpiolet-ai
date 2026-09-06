@@ -30,6 +30,8 @@ export function useCareerOverview() {
         throw error;
       }
     },
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -101,6 +103,8 @@ export function useDiagnosticIntake() {
         throw error;
       }
     },
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
   });
 }
 

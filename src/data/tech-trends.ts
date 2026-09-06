@@ -35,22 +35,22 @@ export type TechTrendCategory = (typeof TECH_TREND_CATEGORIES)[number];
 export const TECH_TRENDS_QUERY_KEY = ["tech-trends"] as const;
 export const TECH_TRACKING_QUERY_KEY = ["tech-tracking"] as const;
 
-/** Fetch a fresh global web report on every page mount. */
+/** Fetch the cached global report; the refresh action remains explicitly available. */
 export function useTechTrends() {
   return useQuery({
     queryKey: TECH_TRENDS_QUERY_KEY,
     queryFn: async () => {
       try {
-        const result = await getTechTrendsFresh();
+        const result = await getTechTrendsReport();
         return result;
       } catch (error) {
         throw new Error(friendlyError(error, "Tech trends couldn't be loaded. Please try again."));
       }
     },
-    staleTime: 0,
-    refetchOnMount: "always",
+    staleTime: 30 * 60_000,
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
-    retry: 2,
+    retry: 1,
   });
 }
 
