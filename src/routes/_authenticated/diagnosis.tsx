@@ -53,7 +53,8 @@ export const Route = createFileRoute("/_authenticated/diagnosis")({
       { title: "Company-Specific Career Diagnosis — CareerPilot AI" },
       {
         name: "description",
-        content: "Discover why you are unemployed, what is lacking in your profile, and why specific companies reject you.",
+        content:
+          "Discover why you are unemployed, what is lacking in your profile, and why specific companies reject you.",
       },
     ],
   }),
@@ -117,11 +118,14 @@ function ScanningOverlay({ companyName, roleName }: { companyName: string; roleN
 
       <h2 className="mt-3 font-display text-2xl font-black tracking-tight text-foreground sm:text-3xl">
         Diagnosing Rejection Risk for <span className="text-terracotta">{roleName}</span> @{" "}
-        <span className="text-foreground underline decoration-terracotta/40 decoration-wavy underline-offset-4">{companyName}</span>
+        <span className="text-foreground underline decoration-terracotta/40 decoration-wavy underline-offset-4">
+          {companyName}
+        </span>
       </h2>
 
       <p className="mt-2 text-xs text-muted-foreground max-w-lg mx-auto">
-        Evaluating your profile against real recruiter hiring bars, production requirements, and entry-level filters.
+        Evaluating your profile against real recruiter hiring bars, production requirements, and
+        entry-level filters.
       </p>
 
       {/* Step by step terminal audit feed */}
@@ -139,8 +143,8 @@ function ScanningOverlay({ companyName, roleName }: { companyName: string; roleN
                 isCurrent
                   ? "border-terracotta/40 bg-card shadow-md font-bold text-foreground"
                   : isDone
-                  ? "border-emerald-500/20 bg-emerald-50/40 text-emerald-900 dark:bg-emerald-950/20 dark:text-emerald-300"
-                  : "border-transparent bg-secondary/40 text-muted-foreground",
+                    ? "border-emerald-500/20 bg-emerald-50/40 text-emerald-900 dark:bg-emerald-950/20 dark:text-emerald-300"
+                    : "border-transparent bg-secondary/40 text-muted-foreground",
               )}
             >
               {isDone ? (
@@ -184,7 +188,8 @@ function WizardSetup({
   const [isCustom, setIsCustom] = useState(false);
   const [role, setRole] = useState(targetRole || "Associate Software Engineer");
 
-  const effectiveCompany = isCustom && customCompany.trim() ? customCompany.trim() : selectedCompany;
+  const effectiveCompany =
+    isCustom && customCompany.trim() ? customCompany.trim() : selectedCompany;
   const matchedTruth = matchCompanyTruth(effectiveCompany);
 
   const handleStart = () => {
@@ -213,8 +218,8 @@ function WizardSetup({
                   isCurrent
                     ? "border-terracotta/40 bg-ink text-white shadow-lg"
                     : isPassed
-                    ? "border-emerald-500/20 bg-secondary/70 text-foreground hover:bg-secondary"
-                    : "border-transparent text-muted-foreground hover:bg-secondary/40",
+                      ? "border-emerald-500/20 bg-secondary/70 text-foreground hover:bg-secondary"
+                      : "border-transparent text-muted-foreground hover:bg-secondary/40",
                 )}
               >
                 <div
@@ -223,15 +228,17 @@ function WizardSetup({
                     isCurrent
                       ? "bg-terracotta text-white shadow-xs scale-105"
                       : isPassed
-                      ? "bg-emerald-100 text-emerald-800"
-                      : "bg-secondary text-muted-foreground",
+                        ? "bg-emerald-100 text-emerald-800"
+                        : "bg-secondary text-muted-foreground",
                   )}
                 >
                   {isPassed ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-xs font-bold leading-tight">{title}</p>
-                  <p className="truncate text-[10px] text-muted-foreground opacity-80">{subtitle}</p>
+                  <p className="truncate text-[10px] text-muted-foreground opacity-80">
+                    {subtitle}
+                  </p>
                 </div>
               </button>
             );
@@ -274,7 +281,10 @@ function WizardSetup({
                 </div>
               </div>
 
-              <CareerIllustration badgeText="Diagnose your rejection risk." className="py-0 max-w-[320px] justify-self-center md:justify-self-end" />
+              <CareerIllustration
+                badgeText="Diagnose your rejection risk."
+                className="py-0 max-w-[320px] justify-self-center md:justify-self-end"
+              />
             </div>
 
             {isCustom ? (
@@ -289,7 +299,8 @@ function WizardSetup({
                   className="h-12 rounded-xl text-sm border-border focus:border-terracotta shadow-xs"
                 />
                 <p className="text-[11px] text-muted-foreground">
-                  We will perform a live diagnostic audit on real hiring standards for this specific organization.
+                  We will perform a live diagnostic audit on real hiring standards for this specific
+                  organization.
                 </p>
               </div>
             ) : (
@@ -403,10 +414,17 @@ function WizardSetup({
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t border-border">
-              <Button variant="ghost" className="rounded-xl text-xs font-bold" onClick={() => setStep(1)}>
+              <Button
+                variant="ghost"
+                className="rounded-xl text-xs font-bold"
+                onClick={() => setStep(1)}
+              >
                 <ArrowLeft className="mr-1.5 h-4 w-4" /> Back to Employer
               </Button>
-              <Button className="rounded-xl px-6 font-bold text-xs shadow-md" onClick={() => setStep(3)}>
+              <Button
+                className="rounded-xl px-6 font-bold text-xs shadow-md"
+                onClick={() => setStep(3)}
+              >
                 Next: Review & Launch Audit <ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
             </div>
@@ -435,25 +453,42 @@ function WizardSetup({
                     Diagnose Rejection Risk for {role}
                   </h2>
                   <p className="mt-1 text-xs text-white/70">
-                    Target Employer: <strong className="text-white underline decoration-terracotta">{effectiveCompany}</strong>
+                    Target Employer:{" "}
+                    <strong className="text-white underline decoration-terracotta">
+                      {effectiveCompany}
+                    </strong>
                   </p>
                 </div>
 
                 <div className="grid gap-3 pt-2 sm:grid-cols-2 text-xs">
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-3.5">
-                    <p className="text-[11px] font-bold text-terracotta uppercase">What We Will Inspect:</p>
-                    <p className="text-white/80 mt-1">Real screening test patterns, ATS keyword filters, and project proof expectations.</p>
+                    <p className="text-[11px] font-bold text-terracotta uppercase">
+                      What We Will Inspect:
+                    </p>
+                    <p className="text-white/80 mt-1">
+                      Real screening test patterns, ATS keyword filters, and project proof
+                      expectations.
+                    </p>
                   </div>
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-3.5">
-                    <p className="text-[11px] font-bold text-emerald-400 uppercase">What You Will Get:</p>
-                    <p className="text-white/80 mt-1">Exact reasons for rejection, missing non-negotiables, and a personalized recovery plan.</p>
+                    <p className="text-[11px] font-bold text-emerald-400 uppercase">
+                      What You Will Get:
+                    </p>
+                    <p className="text-white/80 mt-1">
+                      Exact reasons for rejection, missing non-negotiables, and a personalized
+                      recovery plan.
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t border-border">
-              <Button variant="ghost" className="rounded-xl text-xs font-bold" onClick={() => setStep(2)}>
+              <Button
+                variant="ghost"
+                className="rounded-xl text-xs font-bold"
+                onClick={() => setStep(2)}
+              >
                 <ArrowLeft className="mr-1.5 h-4 w-4" /> Change Selection
               </Button>
               <Button
@@ -495,7 +530,9 @@ function DiagnosticResultsView({
   const navigate = useNavigate();
   const d = overview.diagnosis;
   const generateRoadmap = useGenerateRoadmapV2();
-  const [activeTab, setActiveTab] = useState<"why-unemployed" | "lacking-matrix" | "company-truth" | "prescription">("why-unemployed");
+  const [activeTab, setActiveTab] = useState<
+    "why-unemployed" | "lacking-matrix" | "company-truth" | "prescription"
+  >("why-unemployed");
   const [generatedSuccess, setGeneratedSuccess] = useState(false);
 
   if (!d || !d.companyDiagnosis) return null;
@@ -524,7 +561,7 @@ function DiagnosticResultsView({
         <div className="pointer-events-none absolute -bottom-14 -right-14 h-72 w-72 rounded-full bg-terracotta/25 blur-3xl animate-pulse" />
         <div className="pointer-events-none absolute -top-10 -left-10 h-48 w-48 rounded-full bg-clay/20 blur-3xl" />
 
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
+        <div className="relative z-10 flex flex-wrap items-center justify-between gap-6 lg:pr-[320px]">
           <div className="max-w-xl space-y-3">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-terracotta/20 px-3.5 py-1 text-xs font-bold text-terracotta border border-terracotta/30 shadow-xs">
@@ -537,12 +574,16 @@ function DiagnosticResultsView({
 
             <h1 className="font-display text-2xl font-black sm:text-3xl lg:text-4xl leading-tight">
               Rejection Diagnosis: <br />
-              <span className="text-terracotta underline decoration-terracotta/40 underline-offset-4">{companyDiag.riskTier}</span>
+              <span className="text-terracotta underline decoration-terracotta/40 underline-offset-4">
+                {companyDiag.riskTier}
+              </span>
             </h1>
 
             <p className="text-xs leading-relaxed text-white/75 sm:text-sm">
-              Audited for <strong className="text-white">{d.targetRole}</strong> @ <strong className="text-terracotta">{companyDiag.companyName}</strong>.
-              Automated screening systems and engineering leads will flag your profile due to missing production proof artifacts and unverified technical depth.
+              Audited for <strong className="text-white">{d.targetRole}</strong> @{" "}
+              <strong className="text-terracotta">{companyDiag.companyName}</strong>. Automated
+              screening systems and engineering leads will flag your profile due to missing
+              production proof artifacts and unverified technical depth.
             </p>
           </div>
 
@@ -550,10 +591,14 @@ function DiagnosticResultsView({
           <div className="flex flex-col sm:flex-row items-center gap-4 rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-md shadow-inner">
             <div className="flex items-center gap-3">
               <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-terracotta/20 border-2 border-terracotta/60 shadow-lg">
-                <span className="text-xl font-black text-terracotta">{companyDiag.rejectionRisk}%</span>
+                <span className="text-xl font-black text-terracotta">
+                  {companyDiag.rejectionRisk}%
+                </span>
               </div>
               <div className="text-left">
-                <p className="text-xs font-black uppercase tracking-wider text-white">Rejection Risk</p>
+                <p className="text-xs font-black uppercase tracking-wider text-white">
+                  Rejection Risk
+                </p>
                 <p className="text-[11px] text-white/60">Screening Failure Rate</p>
               </div>
             </div>
@@ -563,7 +608,9 @@ function DiagnosticResultsView({
               size="sm"
               className="h-10 rounded-xl border-white/20 bg-white/10 text-xs font-bold text-white hover:bg-white/20 shadow-xs"
               disabled={isRerunning}
-              onClick={() => onRerun(companyDiag.companyName, d.targetRole || "Associate Software Engineer")}
+              onClick={() =>
+                onRerun(companyDiag.companyName, d.targetRole || "Associate Software Engineer")
+              }
             >
               {isRerunning ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -574,6 +621,14 @@ function DiagnosticResultsView({
               )}
             </Button>
           </div>
+        </div>
+
+        <div className="pointer-events-none absolute bottom-7 right-7 z-10 hidden w-[270px] overflow-hidden rounded-2xl border border-white/20 bg-white p-2 shadow-2xl lg:block xl:right-12 xl:w-[310px]">
+          <img
+            src="/careerpilot-learning-illustration.png"
+            alt="Student learning career skills on a laptop"
+            className="h-auto w-full object-contain"
+          />
         </div>
       </section>
 
@@ -599,7 +654,12 @@ function DiagnosticResultsView({
                     : "border-transparent bg-card text-muted-foreground hover:bg-secondary/80 hover:text-foreground",
                 )}
               >
-                <Icon className={cn("h-4 w-4 shrink-0", isCurrent ? "text-terracotta" : "text-muted-foreground")} />
+                <Icon
+                  className={cn(
+                    "h-4 w-4 shrink-0",
+                    isCurrent ? "text-terracotta" : "text-muted-foreground",
+                  )}
+                />
                 <span className="truncate">{label}</span>
               </button>
             );
@@ -622,7 +682,8 @@ function DiagnosticResultsView({
                 Why {companyDiag.companyName} Screens Out Your Applications
               </h2>
               <p className="text-xs text-muted-foreground mt-1">
-                Specific structural barriers derived from live recruiting patterns and technical screening criteria.
+                Specific structural barriers derived from live recruiting patterns and technical
+                screening criteria.
               </p>
             </div>
             <span className="rounded-full bg-rose-500/10 border border-rose-500/20 px-3.5 py-1 text-xs font-extrabold text-rose-600 dark:text-rose-400">
@@ -631,39 +692,53 @@ function DiagnosticResultsView({
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2">
-            {companyDiag.whyUnemployedReasons.map((reason: { title: string; detail: string; recruiterPerspective: string }, index: number) => (
-              <div key={reason.title} className="group relative rounded-2xl border border-border bg-card p-6 space-y-4 hover:border-terracotta/40 hover:shadow-md transition-all">
-                <div className="flex items-center justify-between">
-                  <span className="rounded-lg bg-terracotta/10 border border-terracotta/20 px-3 py-0.5 text-xs font-black text-terracotta">
-                    Barrier 0{index + 1}
-                  </span>
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-500/10 text-rose-500">
-                    <ShieldAlert className="h-4 w-4" />
+            {companyDiag.whyUnemployedReasons.map(
+              (
+                reason: { title: string; detail: string; recruiterPerspective: string },
+                index: number,
+              ) => (
+                <div
+                  key={reason.title}
+                  className="group relative rounded-2xl border border-border bg-card p-6 space-y-4 hover:border-terracotta/40 hover:shadow-md transition-all"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="rounded-lg bg-terracotta/10 border border-terracotta/20 px-3 py-0.5 text-xs font-black text-terracotta">
+                      Barrier 0{index + 1}
+                    </span>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-500/10 text-rose-500">
+                      <ShieldAlert className="h-4 w-4" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-base font-bold text-foreground group-hover:text-terracotta transition-colors">
+                      {reason.title}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                      {reason.detail}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-secondary/70 p-4 text-xs space-y-1 border border-border/60">
+                    <p className="text-[10px] font-black uppercase tracking-wider text-terracotta">
+                      Verified Recruiter Feedback:
+                    </p>
+                    <p className="italic font-medium text-foreground leading-relaxed">
+                      "{reason.recruiterPerspective}"
+                    </p>
                   </div>
                 </div>
-
-                <div>
-                  <h3 className="text-base font-bold text-foreground group-hover:text-terracotta transition-colors">
-                    {reason.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
-                    {reason.detail}
-                  </p>
-                </div>
-
-                <div className="rounded-xl bg-secondary/70 p-4 text-xs space-y-1 border border-border/60">
-                  <p className="text-[10px] font-black uppercase tracking-wider text-terracotta">Verified Recruiter Feedback:</p>
-                  <p className="italic font-medium text-foreground leading-relaxed">
-                    "{reason.recruiterPerspective}"
-                  </p>
-                </div>
-              </div>
-            ))}
+              ),
+            )}
           </div>
 
           <div className="flex justify-end pt-4 border-t border-border">
-            <Button className="rounded-xl font-bold text-xs shadow-md bg-ink hover:bg-ink/90 text-white" onClick={() => setActiveTab("lacking-matrix")}>
-              Next: Inspect Profile Deficiencies <ArrowRight className="ml-1.5 h-4 w-4 text-terracotta" />
+            <Button
+              className="rounded-xl font-bold text-xs shadow-md bg-ink hover:bg-ink/90 text-white"
+              onClick={() => setActiveTab("lacking-matrix")}
+            >
+              Next: Inspect Profile Deficiencies{" "}
+              <ArrowRight className="ml-1.5 h-4 w-4 text-terracotta" />
             </Button>
           </div>
         </motion.div>
@@ -679,9 +754,12 @@ function DiagnosticResultsView({
           className="card-surface p-6 sm:p-8 space-y-6 border-terracotta/15 shadow-sm"
         >
           <div>
-            <h2 className="font-display text-xl font-bold text-foreground sm:text-2xl">Capability & Evidence Gap Breakdown</h2>
+            <h2 className="font-display text-xl font-bold text-foreground sm:text-2xl">
+              Capability & Evidence Gap Breakdown
+            </h2>
             <p className="text-xs text-muted-foreground mt-1">
-              Pinpoint deficiencies in required tech stacks, project proof artifacts, and ATS keyword optimization.
+              Pinpoint deficiencies in required tech stacks, project proof artifacts, and ATS
+              keyword optimization.
             </p>
           </div>
 
@@ -690,11 +768,16 @@ function DiagnosticResultsView({
             <div className="rounded-2xl border border-rose-500/30 bg-gradient-to-b from-rose-500/5 to-card p-5 space-y-3.5 shadow-xs">
               <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
                 <X className="h-4 w-4 shrink-0 font-bold" />
-                <h3 className="text-xs font-black uppercase tracking-wider">Missing Non-Negotiables</h3>
+                <h3 className="text-xs font-black uppercase tracking-wider">
+                  Missing Non-Negotiables
+                </h3>
               </div>
               <ul className="space-y-2.5 text-xs text-foreground">
                 {companyDiag.whatIsLacking.missingNonNegotiables.map((item: string) => (
-                  <li key={item} className="flex items-start gap-2.5 rounded-xl bg-card p-3 border border-rose-500/15 shadow-2xs">
+                  <li
+                    key={item}
+                    className="flex items-start gap-2.5 rounded-xl bg-card p-3 border border-rose-500/15 shadow-2xs"
+                  >
                     <span className="mt-1 h-2 w-2 rounded-full bg-rose-500 shrink-0" />
                     <span className="font-medium">{item}</span>
                   </li>
@@ -706,11 +789,16 @@ function DiagnosticResultsView({
             <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-500/5 to-card p-5 space-y-3.5 shadow-xs">
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
-                <h3 className="text-xs font-black uppercase tracking-wider">Project Deficiencies</h3>
+                <h3 className="text-xs font-black uppercase tracking-wider">
+                  Project Deficiencies
+                </h3>
               </div>
               <ul className="space-y-2.5 text-xs text-foreground">
                 {companyDiag.whatIsLacking.projectDeficiencies.map((item: string) => (
-                  <li key={item} className="flex items-start gap-2.5 rounded-xl bg-card p-3 border border-amber-500/15 shadow-2xs">
+                  <li
+                    key={item}
+                    className="flex items-start gap-2.5 rounded-xl bg-card p-3 border border-amber-500/15 shadow-2xs"
+                  >
                     <span className="mt-1 h-2 w-2 rounded-full bg-amber-500 shrink-0" />
                     <span className="font-medium">{item}</span>
                   </li>
@@ -722,11 +810,16 @@ function DiagnosticResultsView({
             <div className="rounded-2xl border border-blue-500/30 bg-gradient-to-b from-blue-500/5 to-card p-5 space-y-3.5 shadow-xs">
               <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
                 <FileCheck className="h-4 w-4 shrink-0" />
-                <h3 className="text-xs font-black uppercase tracking-wider">Profile & Evidence Flaws</h3>
+                <h3 className="text-xs font-black uppercase tracking-wider">
+                  Profile & Evidence Flaws
+                </h3>
               </div>
               <ul className="space-y-2.5 text-xs text-foreground">
                 {companyDiag.whatIsLacking.cvAndAtsFlaws.map((item: string) => (
-                  <li key={item} className="flex items-start gap-2.5 rounded-xl bg-card p-3 border border-blue-500/15 shadow-2xs">
+                  <li
+                    key={item}
+                    className="flex items-start gap-2.5 rounded-xl bg-card p-3 border border-blue-500/15 shadow-2xs"
+                  >
                     <span className="mt-1 h-2 w-2 rounded-full bg-blue-500 shrink-0" />
                     <span className="font-medium">{item}</span>
                   </li>
@@ -736,10 +829,17 @@ function DiagnosticResultsView({
           </div>
 
           <div className="flex items-center justify-between pt-4 border-t border-border">
-            <Button variant="ghost" className="rounded-xl text-xs font-bold" onClick={() => setActiveTab("why-unemployed")}>
+            <Button
+              variant="ghost"
+              className="rounded-xl text-xs font-bold"
+              onClick={() => setActiveTab("why-unemployed")}
+            >
               <ArrowLeft className="mr-1.5 h-4 w-4" /> Back to Rejection Reasons
             </Button>
-            <Button className="rounded-xl font-bold text-xs shadow-md bg-ink hover:bg-ink/90 text-white" onClick={() => setActiveTab("company-truth")}>
+            <Button
+              className="rounded-xl font-bold text-xs shadow-md bg-ink hover:bg-ink/90 text-white"
+              onClick={() => setActiveTab("company-truth")}
+            >
               Next: View Company Standards <ArrowRight className="ml-1.5 h-4 w-4 text-terracotta" />
             </Button>
           </div>
@@ -770,10 +870,14 @@ function DiagnosticResultsView({
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-terracotta/10 text-terracotta">
                   <Code2 className="h-5 w-5" />
                 </div>
-                <h3 className="text-base font-bold text-foreground">Technical Screening Test Expectation</h3>
+                <h3 className="text-base font-bold text-foreground">
+                  Technical Screening Test Expectation
+                </h3>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed sm:text-sm">
-                Candidates are expected to solve live algorithmic problems, write indexed SQL queries under time pressure, and present modular OOP / System Architecture cleanly without tutorial code copy-pasting.
+                Candidates are expected to solve live algorithmic problems, write indexed SQL
+                queries under time pressure, and present modular OOP / System Architecture cleanly
+                without tutorial code copy-pasting.
               </p>
             </div>
 
@@ -782,20 +886,32 @@ function DiagnosticResultsView({
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-terracotta/10 text-terracotta">
                   <Terminal className="h-5 w-5" />
                 </div>
-                <h3 className="text-base font-bold text-foreground">Verified Proof Artifact Requirements</h3>
+                <h3 className="text-base font-bold text-foreground">
+                  Verified Proof Artifact Requirements
+                </h3>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed sm:text-sm">
-                Instead of basic UI clones, top tier hires present production applications featuring Docker containerization, REST API documentation (Swagger), production database schemas, and live test suites.
+                Instead of basic UI clones, top tier hires present production applications featuring
+                Docker containerization, REST API documentation (Swagger), production database
+                schemas, and live test suites.
               </p>
             </div>
           </div>
 
           <div className="flex items-center justify-between pt-4 border-t border-border">
-            <Button variant="ghost" className="rounded-xl text-xs font-bold" onClick={() => setActiveTab("lacking-matrix")}>
+            <Button
+              variant="ghost"
+              className="rounded-xl text-xs font-bold"
+              onClick={() => setActiveTab("lacking-matrix")}
+            >
               <ArrowLeft className="mr-1.5 h-4 w-4" /> Back to Profile Deficiencies
             </Button>
-            <Button className="rounded-xl font-bold text-xs shadow-md bg-ink hover:bg-ink/90 text-white" onClick={() => setActiveTab("prescription")}>
-              Next: View Action Blueprint & Roadmap <ArrowRight className="ml-1.5 h-4 w-4 text-terracotta" />
+            <Button
+              className="rounded-xl font-bold text-xs shadow-md bg-ink hover:bg-ink/90 text-white"
+              onClick={() => setActiveTab("prescription")}
+            >
+              Next: View Action Blueprint & Roadmap{" "}
+              <ArrowRight className="ml-1.5 h-4 w-4 text-terracotta" />
             </Button>
           </div>
         </motion.div>
@@ -841,7 +957,10 @@ function DiagnosticResultsView({
                   "Dockerized environment configuration with PostgreSQL / Redis",
                   "Live deployed production URL with clean public GitHub repository & documentation",
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-3 rounded-xl bg-card p-3.5 border border-border shadow-2xs">
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 rounded-xl bg-card p-3.5 border border-border shadow-2xs"
+                  >
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                     <span className="font-medium text-foreground">{item}</span>
                   </div>
@@ -939,7 +1058,12 @@ function DiagnosisPage() {
     >
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <Button variant="ghost" size="sm" className="rounded-xl text-xs font-bold" onClick={() => navigate({ to: "/dashboard" })}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="rounded-xl text-xs font-bold"
+            onClick={() => navigate({ to: "/dashboard" })}
+          >
             <ArrowLeft className="mr-1.5 h-3.5 w-3.5" /> Back to Dashboard
           </Button>
           <div className="flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs text-muted-foreground">
@@ -949,19 +1073,27 @@ function DiagnosisPage() {
 
         {runDiagnosis.isPending ? (
           <ScanningOverlay
-            companyName={data?.diagnosis?.targetCompany || data?.targetJob?.company || "Systems Limited"}
-            roleName={data?.diagnosis?.targetRole || data?.targetRole || "Associate Software Engineer"}
+            companyName={
+              data?.diagnosis?.targetCompany || data?.targetJob?.company || "Systems Limited"
+            }
+            roleName={
+              data?.diagnosis?.targetRole || data?.targetRole || "Associate Software Engineer"
+            }
           />
         ) : hasDiagnosis ? (
           <div className="space-y-8">
             <DiagnosticResultsView
               overview={data!}
-              onRerun={(comp, r) => handleRunDiagnosis(comp || "Systems Limited", r || "Associate Software Engineer")}
+              onRerun={(comp, r) =>
+                handleRunDiagnosis(comp || "Systems Limited", r || "Associate Software Engineer")
+              }
               isRerunning={runDiagnosis.isPending}
             />
             <div className="border-t border-border pt-8">
               <div className="mb-4">
-                <h3 className="font-display text-lg font-bold text-foreground">Audit Another Company or Role</h3>
+                <h3 className="font-display text-lg font-bold text-foreground">
+                  Audit Another Company or Role
+                </h3>
                 <p className="text-xs text-muted-foreground">
                   Run a fresh technical diagnostic audit against another employer.
                 </p>
