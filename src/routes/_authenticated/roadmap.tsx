@@ -560,39 +560,59 @@ function RoadmapPage() {
             ) : pathList.length > 0 ? (
               pathList.map((path) => <LearningPathCard key={path.id} path={path} />)
             ) : (
-              <div className="card-surface py-10 text-center">
-                <p className="text-[13px] text-muted-foreground">
-                  No learning paths generated yet. Generate a roadmap based on your profile and
-                  goal.
-                </p>
-                <Button
-                  className="mt-4 rounded-xl bg-terracotta text-primary-foreground hover:bg-terracotta/90"
-                  disabled={generateRoadmap.isPending}
-                  onClick={() =>
-                    generateRoadmap.mutate(undefined, {
-                      onSuccess: (result) => {
-                        if (result.success) {
-                          toast.success(
-                            `Roadmap generated with ${result.pathCount} learning paths!`,
-                          );
-                        } else {
-                          toast.error(result.error ?? "Failed to generate roadmap.");
-                        }
-                      },
-                      onError: (err) => toast.error(err.message || "Failed to generate roadmap."),
-                    })
-                  }
-                >
-                  {generateRoadmap.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating Roadmap...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="mr-2 h-4 w-4" /> Generate Roadmap
-                    </>
-                  )}
-                </Button>
+              <div className="card-surface relative overflow-hidden border-terracotta/15 bg-gradient-to-br from-card via-card to-terracotta/[0.06] p-5 sm:p-7">
+                <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-terracotta/10 blur-3xl" />
+                <div className="relative grid items-center gap-6 md:grid-cols-[minmax(0,1fr)_minmax(220px,0.85fr)] md:gap-8">
+                  <div className="text-center md:text-left">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-terracotta/20 bg-terracotta/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-terracotta">
+                      <Sparkles className="h-3 w-3" /> Your next chapter
+                    </span>
+                    <h4 className="mt-3 font-display text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+                      Turn your goal into a plan you can follow.
+                    </h4>
+                    <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-muted-foreground md:mx-0">
+                      No learning paths generated yet. Build a roadmap based on your profile, target
+                      role, and market gaps.
+                    </p>
+                    <Button
+                      className="mt-5 rounded-xl bg-terracotta text-primary-foreground shadow-lift hover:bg-terracotta/90"
+                      disabled={generateRoadmap.isPending}
+                      onClick={() =>
+                        generateRoadmap.mutate(undefined, {
+                          onSuccess: (result) => {
+                            if (result.success) {
+                              toast.success(
+                                `Roadmap generated with ${result.pathCount} learning paths!`,
+                              );
+                            } else {
+                              toast.error(result.error ?? "Failed to generate roadmap.");
+                            }
+                          },
+                          onError: (err) =>
+                            toast.error(err.message || "Failed to generate roadmap."),
+                        })
+                      }
+                    >
+                      {generateRoadmap.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating Roadmap...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" /> Generate Roadmap
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  <div className="relative mx-auto w-full max-w-[330px] overflow-hidden rounded-2xl border border-terracotta/15 bg-white shadow-card">
+                    <img
+                      src="/careerpilot-learning-illustration.png"
+                      alt="Student learning career skills on a laptop"
+                      className="h-auto w-full object-contain"
+                    />
+                  </div>
+                </div>
               </div>
             )}
           </div>
