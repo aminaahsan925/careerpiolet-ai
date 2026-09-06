@@ -69,6 +69,20 @@ export async function submitMcqAttempt(
   answers: Array<{ questionId: string; selectedOption: string }>,
 ) {
   try {
+    const validOptions = new Set(["a", "b", "c", "d"]);
+    const seenQuestionIds = new Set<string>();
+    for (const answer of answers) {
+      const questionId = answer.questionId.trim();
+      const selectedOption = answer.selectedOption.trim().toLowerCase();
+      if (!questionId || !validOptions.has(selectedOption)) {
+        throw new Error("Each MCQ answer must include a valid option.");
+      }
+      if (seenQuestionIds.has(questionId)) {
+        throw new Error("A question was submitted more than once. Please try again.");
+      }
+      seenQuestionIds.add(questionId);
+    }
+
     // 1. Fetch the daily work item to verify ownership
     const { data: day, error: dayError } = await db
       .from("roadmap_daily_work")
@@ -103,6 +117,10 @@ export async function submitMcqAttempt(
       throw new Error("No matching MCQ questions found.");
     }
 
+    if (testQuestions.length !== answers.length) {
+      throw new Error("Some submitted questions do not belong to this assessment.");
+    }
+
     // Build a lookup map for correct answers
     const correctMap = new Map<
       string,
@@ -113,7 +131,7 @@ export async function submitMcqAttempt(
     }
 
     // 3. Grade each answer
-    const totalQuestions = answers.length;
+    const totalQuestions = testQuestions.length;
     let correctCount = 0;
     const results: Array<{
       questionId: string;
