@@ -20,6 +20,28 @@ const str = (v: unknown, max = 200) =>
     .trim()
     .slice(0, max);
 
+function normaliseRoadmapLevel(value: unknown): "beginner" | "intermediate" | "expert" {
+  const level = str(value, 30)
+    .toLowerCase()
+    .replace(/[-\s]+/g, "_");
+  if (level === "expert" || level === "advanced") return "expert";
+  if (level === "intermediate" || level === "mid") return "intermediate";
+  return "beginner";
+}
+
+function normaliseRoadmapCategory(
+  value: unknown,
+): "core_skill" | "emerging_tech" | "problem_solving" | "tooling" | "deployment" {
+  const category = str(value, 40)
+    .toLowerCase()
+    .replace(/[-\s]+/g, "_");
+  if (category.includes("emerging") || category.includes("ai")) return "emerging_tech";
+  if (category.includes("problem") || category.includes("algorithm")) return "problem_solving";
+  if (category.includes("deploy") || category.includes("devops")) return "deployment";
+  if (category.includes("tool") || category.includes("workflow")) return "tooling";
+  return "core_skill";
+}
+
 type RoadmapResource = {
   label: string;
   url: string;
@@ -376,14 +398,6 @@ export async function generateRoadmapV2(
     await db.from("roadmap_learning_paths").delete().eq("user_id", userId);
 
     // 11. Insert new data
-    const validLevels = ["beginner", "intermediate", "expert"];
-    const validCategories = [
-      "core_skill",
-      "emerging_tech",
-      "problem_solving",
-      "tooling",
-      "deployment",
-    ];
     const validDifficulties = ["basic", "intermediate", "advanced"];
     const validOptions = ["a", "b", "c", "d"];
 
@@ -393,12 +407,8 @@ export async function generateRoadmapV2(
     for (let pathIndex = 0; pathIndex < pathsRaw.length; pathIndex++) {
       const pathData = pathsRaw[pathIndex] as Record<string, unknown>;
 
-      const level = str(pathData["level"], 20).toLowerCase();
-      const category = str(pathData["category"], 30).toLowerCase();
-
-      // Validate level and category
-      if (!validLevels.includes(level)) continue;
-      if (!validCategories.includes(category)) continue;
+      const level = normaliseRoadmapLevel(pathData["level"]);
+      const category = normaliseRoadmapCategory(pathData["category"]);
 
       const title = str(pathData["title"], 200);
       const description = str(pathData["description"], 600);
@@ -556,6 +566,14 @@ export async function generateRoadmapV2(
       if (mcqInserts.length) {
         await db.from("roadmap_mcq_tests").insert(mcqInserts);
       }
+    }
+
+    if (pathCount === 0) {
+      return {
+        success: false,
+        pathCount: 0,
+        error: "The roadmap response was not usable. Please try generating it again.",
+      };
     }
 
     // 12. Create initial notification for Day 1
