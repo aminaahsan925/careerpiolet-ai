@@ -432,7 +432,7 @@ function drawTableOfContents(doc) {
       .fillColor(COLOR.primary)
       .text(num, MARGIN, y, { width: 24, lineBreak: false });
     doc
-    .font("Body")
+      .font("Body")
       .fontSize(10)
       .fillColor(COLOR.ink)
       .text(title, MARGIN + 28, y, { width: CONTENT_WIDTH - 28, lineBreak: false });
