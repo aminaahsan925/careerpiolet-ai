@@ -43,6 +43,25 @@ const MARGIN = 56;
 const TOP_Y = 64;
 const CONTENT_WIDTH = 595.28 - MARGIN * 2; // A4 width minus margins
 
+const WINDOWS_FONTS = path.join(process.env.WINDIR ?? "C:\\Windows", "Fonts");
+
+/** Embed familiar fonts so PDF viewers do not substitute a cramped fallback. */
+function registerDocumentFonts(doc) {
+  const fonts = [
+    ["Body", path.join(WINDOWS_FONTS, "arial.ttf")],
+    ["Body-Bold", path.join(WINDOWS_FONTS, "arialbd.ttf")],
+    ["Body-Italic", path.join(WINDOWS_FONTS, "ariali.ttf")],
+    ["Body-BoldItalic", path.join(WINDOWS_FONTS, "arialbi.ttf")],
+    ["Helvetica", path.join(WINDOWS_FONTS, "arial.ttf")],
+    ["Helvetica-Bold", path.join(WINDOWS_FONTS, "arialbd.ttf")],
+    ["Helvetica-Oblique", path.join(WINDOWS_FONTS, "ariali.ttf")],
+    ["Helvetica-BoldOblique", path.join(WINDOWS_FONTS, "arialbi.ttf")],
+  ];
+  if (fonts.every(([, file]) => fs.existsSync(file))) {
+    fonts.forEach(([name, file]) => doc.registerFont(name, file));
+  }
+}
+
 /* -------------------------------------------------------------- helpers */
 
 /** Letter-spaced small-caps label. Restores the text cursor afterwards. */
@@ -109,15 +128,22 @@ function sectionHeading(doc, num, title) {
   doc.y += 20;
 }
 
+/** Start a section without wasting a page when the current page has room. */
+function sectionStart(doc, num, title, opts = {}) {
+  if (opts.pageBreak) newPage(doc);
+  else ensureRoom(doc, opts.minimumRoom ?? 190);
+  sectionHeading(doc, num, title);
+}
+
 /** Justified body paragraph. */
 function paragraph(doc, text, opts = {}) {
   const size = opts.size ?? 9.5;
   ensureRoom(doc, size * 3);
   doc
-    .font(opts.bold ? "Helvetica-Bold" : "Helvetica")
+    .font(opts.bold ? "Body-Bold" : "Body")
     .fontSize(size)
     .fillColor(opts.color ?? COLOR.ink)
-    .text(text, MARGIN, doc.y, { width: CONTENT_WIDTH, align: "justify", lineGap: 3.5 });
+    .text(text, MARGIN, doc.y, { width: CONTENT_WIDTH, align: "left", lineGap: 3.5 });
   doc.y += opts.after ?? 10;
 }
 
@@ -133,10 +159,10 @@ function bullets(doc, items, opts = {}) {
       .fillColor(COLOR.primary)
       .text("•", MARGIN, y, { lineBreak: false });
     doc
-      .font("Helvetica")
+      .font("Body")
       .fontSize(size)
       .fillColor(COLOR.ink)
-      .text(item, MARGIN + 16, y, { width: CONTENT_WIDTH - 16, align: "justify", lineGap: 3 });
+      .text(item, MARGIN + 16, y, { width: CONTENT_WIDTH - 16, align: "left", lineGap: 3 });
     doc.y = Math.max(doc.y, y + size * 1.35) + (opts.gap ?? 5);
   });
 }
@@ -163,10 +189,10 @@ function stepGrid(doc, entries) {
         .fillColor(COLOR.ink)
         .text(entry.title, x + 42, rowY + 10, { width: cardW - 54, lineGap: 1.5 });
       doc
-        .font("Helvetica")
+        .font("Body")
         .fontSize(8.5)
         .fillColor(COLOR.muted)
-        .text(entry.body, x + 12, rowY + 32, { width: cardW - 24, align: "justify", lineGap: 2.5 });
+        .text(entry.body, x + 12, rowY + 32, { width: cardW - 24, align: "left", lineGap: 2.5 });
     }
     doc.y = rowY + cardH + 12;
   }
@@ -192,12 +218,12 @@ function table(doc, headers, rows, widths) {
       .text(row[0], MARGIN, rowY, { width: widths[0] - 8, lineGap: 2.5 });
     const afterLeft = doc.y;
     doc
-      .font("Helvetica")
+      .font("Body")
       .fontSize(8.5)
       .fillColor(COLOR.muted)
       .text(row[1], MARGIN + widths[0], rowY, {
         width: widths[1] - 8,
-        align: "justify",
+        align: "left",
         lineGap: 2.5,
       });
     doc.y = Math.max(doc.y, afterLeft) + 9;
@@ -218,10 +244,10 @@ function titledRows(doc, rows) {
       .fillColor(COLOR.primary)
       .text(r.title, MARGIN, y + 8, { width: CONTENT_WIDTH - 28 });
     doc
-      .font("Helvetica")
+      .font("Body")
       .fontSize(8.5)
       .fillColor(COLOR.muted)
-      .text(r.body, MARGIN, y + 22, { width: CONTENT_WIDTH - 28, align: "justify", lineGap: 2.5 });
+      .text(r.body, MARGIN, y + 22, { width: CONTENT_WIDTH - 28, align: "left", lineGap: 2.5 });
     const est = 22 + Math.ceil(r.body.length / 95) * 12;
     doc.y = y + 8 + Math.max(38, est);
   });
@@ -243,12 +269,12 @@ function quotePanel(doc, label, quote, opts = {}) {
   );
   tracking(doc, label, MARGIN + 14, top + 12, { size: 7, color: opts.labelColor ?? COLOR.primary });
   doc
-    .font(opts.font ?? "Helvetica-BoldOblique")
+    .font(opts.font ?? "Body-BoldItalic")
     .fontSize(opts.size ?? 10.5)
     .fillColor(opts.textColor ?? COLOR.ink)
     .text(quote, MARGIN + 14, top + 30, {
       width: CONTENT_WIDTH - 28,
-      align: "justify",
+      align: "left",
       lineGap: 3.5,
     });
   doc.y = top + height + 14;
@@ -271,7 +297,7 @@ function absoluteText(doc, str, x, y, opts) {
 function drawFooter(doc, pageDisplay) {
   const y = doc.page.height - 40;
   doc.save();
-  doc.font("Helvetica").fontSize(7.5).fillColor(COLOR.muted);
+  doc.font("Body").fontSize(7.5).fillColor(COLOR.muted);
   absoluteText(doc, "CAREERPILOT AI  |  ALIBABA CLOUD AI HACKATHON PAKISTAN 2026", MARGIN, y, {
     width: CONTENT_WIDTH,
     align: "left",
@@ -318,7 +344,7 @@ function drawCover(doc) {
     .text("Precision Career Intelligence", MARGIN, 266, { width: CONTENT_WIDTH, align: "center" });
 
   doc
-    .font("Helvetica")
+    .font("Body")
     .fontSize(11)
     .fillColor("#e8e4de")
     .text("From career confusion to a clear, evidence-based path toward employment.", MARGIN, 312, {
@@ -328,7 +354,7 @@ function drawCover(doc) {
     });
 
   doc
-    .font("Helvetica")
+    .font("Body")
     .fontSize(10)
     .fillColor("#b9b2a9")
     .text(
@@ -349,7 +375,7 @@ function drawCover(doc) {
   doc.restore();
 
   doc
-    .font("Helvetica")
+    .font("Body")
     .fontSize(9.5)
     .fillColor("#c9c2ba")
     .text(`Supporting documentation for project submission  •  ${DOC_DATE}`, MARGIN, 424, {
@@ -357,7 +383,7 @@ function drawCover(doc) {
       align: "center",
     });
 
-  doc.font("Helvetica").fontSize(9).fillColor("#8d857c");
+  doc.font("Body").fontSize(9).fillColor("#8d857c");
   absoluteText(doc, `Live demo: ${LIVE_URL}`, MARGIN, H - 82, {
     width: CONTENT_WIDTH,
     align: "center",
@@ -406,7 +432,7 @@ function drawTableOfContents(doc) {
       .fillColor(COLOR.primary)
       .text(num, MARGIN, y, { width: 24, lineBreak: false });
     doc
-      .font("Helvetica")
+    .font("Body")
       .fontSize(10)
       .fillColor(COLOR.ink)
       .text(title, MARGIN + 28, y, { width: CONTENT_WIDTH - 28, lineBreak: false });
@@ -418,7 +444,7 @@ function drawTableOfContents(doc) {
     doc,
     "HOW TO READ THIS DOCUMENT",
     "This document accompanies the live prototype and the public repository. Section 10, Winning Strategy, is written for hackathon judges: it states what makes this entry defensible under evaluation criteria and where the project goes next.",
-    { height: 74, font: "Helvetica", size: 8.5, fill: COLOR.secondary, stroke: COLOR.border },
+    { height: 74, font: "Body", size: 8.5, fill: COLOR.secondary, stroke: COLOR.border },
   );
 }
 
@@ -447,8 +473,7 @@ function section1(doc) {
 }
 
 function section2(doc) {
-  newPage(doc);
-  sectionHeading(doc, 2, "Problem and Audience");
+  sectionStart(doc, 2, "Problem and Audience");
   paragraph(
     doc,
     "Students in Pakistan and other emerging markets often learn without a clear target. They do not know which skills matter for a specific job, why applications fail, what projects employers value, or how to prepare for interviews. Students outside major cities may also lack access to mentors, professional networks, and expensive career programs.",
@@ -477,7 +502,7 @@ function section2(doc) {
       .fillColor(COLOR.primary)
       .text("—", MARGIN + 14, py, { lineBreak: false });
     doc
-      .font("Helvetica")
+      .font("Body")
       .fontSize(9)
       .fillColor(COLOR.ink)
       .text(p, MARGIN + 30, py, { width: CONTENT_WIDTH - 44, lineBreak: false });
@@ -491,8 +516,7 @@ function section2(doc) {
 }
 
 function section3(doc) {
-  newPage(doc);
-  sectionHeading(doc, 3, "Solution and User Journey");
+  sectionStart(doc, 3, "Solution and User Journey");
   paragraph(doc, "CareerPilot converts uncertainty into a sequence of decisions and actions:", {
     after: 14,
   });
@@ -529,8 +553,7 @@ function section3(doc) {
 }
 
 function section4(doc) {
-  newPage(doc);
-  sectionHeading(doc, 4, "Key Capabilities");
+  sectionStart(doc, 4, "Key Capabilities");
   bullets(doc, [
     "Personalized career diagnosis with role and company context.",
     "Pakistan-focused Market Reality covering employer expectations, salary benchmarks, and practical opportunities.",
@@ -551,8 +574,7 @@ function section4(doc) {
 }
 
 function section5(doc) {
-  newPage(doc);
-  sectionHeading(doc, 5, "Innovation");
+  sectionStart(doc, 5, "Innovation");
   paragraph(
     doc,
     "CareerPilot is not only a course platform, chatbot, resume tool, or job board. Its innovation is the connection between diagnosis, market reality, learning execution, assessment, interview preparation, recruiter feedback, and proof. The platform helps a student move from knowing about a skill to demonstrating that skill in a way an employer can understand.",
@@ -585,8 +607,7 @@ function section5(doc) {
 }
 
 function section6(doc) {
-  newPage(doc);
-  sectionHeading(doc, 6, "Technology and Architecture");
+  sectionStart(doc, 6, "Technology and Architecture");
   paragraph(
     doc,
     "The working prototype uses a modern full-stack architecture designed for maintainability, security, and future scale. The client uses React 19, TypeScript, TanStack Router, TanStack Query, Tailwind CSS, and Motion. Supabase provides authentication, Postgres persistence, storage, Row Level Security, user profiles, career goals, skills, projects, resumes, roadmaps, assessments, notifications, and recruiter sessions.",
@@ -626,8 +647,7 @@ function section6(doc) {
 }
 
 function section7(doc) {
-  newPage(doc);
-  sectionHeading(doc, 7, "What Has Been Built");
+  sectionStart(doc, 7, "What Has Been Built");
   paragraph(
     doc,
     "CareerPilot is a working, deployed prototype rather than a concept-only proposal. The implemented product includes authentication, onboarding, target role selection, Pakistani and international company selection, custom company entry, career diagnosis, market analysis, personalized roadmaps, daily tasks, MCQ assessments, interview preparation, recruiter simulation, resume analysis, notifications, progress tracking, certificate unlocking, and mobile-responsive layouts.",
@@ -674,8 +694,7 @@ function section7(doc) {
 }
 
 function section8(doc) {
-  newPage(doc);
-  sectionHeading(doc, 8, "Impact and Feasibility");
+  sectionStart(doc, 8, "Impact and Feasibility");
   paragraph(
     doc,
     "CareerPilot can reduce wasted learning time, improve student confidence, and make career guidance more accessible. For universities and training organizations, it provides a structured employability journey. The architecture is modular, cloud-ready, and capable of expanding with more roles, employers, market sources, learning paths, and assessment content.",
@@ -695,8 +714,7 @@ function section8(doc) {
 }
 
 function section9(doc) {
-  newPage(doc);
-  sectionHeading(doc, 9, "Demonstration Flow");
+  sectionStart(doc, 9, "Demonstration Flow");
   paragraph(
     doc,
     "A judge can understand the complete value of CareerPilot through this short product journey:",
@@ -728,7 +746,7 @@ function section9(doc) {
       .fillColor(COLOR.primary)
       .text(String(i + 1), MARGIN + 7, y + 4.5, { lineBreak: false });
     doc
-      .font("Helvetica")
+      .font("Body")
       .fontSize(9.5)
       .fillColor(COLOR.ink)
       .text(step, MARGIN + 32, y + 5, { width: CONTENT_WIDTH - 32 });
@@ -744,8 +762,7 @@ function section9(doc) {
 /* ------------------------------------------------ section 10: the new part */
 
 function section10(doc) {
-  newPage(doc);
-  sectionHeading(doc, 10, "Winning Strategy");
+  sectionStart(doc, 10, "Winning Strategy");
   paragraph(
     doc,
     "This section states plainly why CareerPilot AI is a strong hackathon entry and how it is positioned to win. It is organized around the criteria judges typically apply: problem significance, working execution, technical depth, innovation, and presentation.",
@@ -807,8 +824,7 @@ function section10(doc) {
 }
 
 function section11(doc) {
-  newPage(doc);
-  sectionHeading(doc, 11, "Why CareerPilot Matters");
+  sectionStart(doc, 11, "Why CareerPilot Matters");
   paragraph(
     doc,
     "CareerPilot responds to a practical national challenge: helping educated young people become employable through better information, focused learning, and credible evidence. It supports students who do not know where to begin and gives them a way to understand their profile from an employer's perspective.",
@@ -847,7 +863,7 @@ function section11(doc) {
     .fillColor(COLOR.ink)
     .text("Live demo", MARGIN + 14, top + 26, { lineBreak: false });
   doc
-    .font("Helvetica")
+    .font("Body")
     .fontSize(9.5)
     .fillColor(COLOR.muted)
     .text(LIVE_URL, MARGIN + 110, top + 26, { lineBreak: false });
@@ -857,7 +873,7 @@ function section11(doc) {
     .fillColor(COLOR.ink)
     .text("Source code", MARGIN + 14, top + 42, { lineBreak: false });
   doc
-    .font("Helvetica")
+    .font("Body")
     .fontSize(9.5)
     .fillColor(COLOR.muted)
     .text(REPO_URL, MARGIN + 110, top + 42, { lineBreak: false });
@@ -893,6 +909,7 @@ async function main() {
         "CareerPilot AI, career readiness, hackathon, Alibaba Cloud, Pakistan, AI mentor, roadmap, recruiter audit, market reality, winning strategy",
     },
   });
+  registerDocumentFonts(doc);
 
   const stream = fs.createWriteStream(OUT_FILE);
   doc.pipe(stream);
