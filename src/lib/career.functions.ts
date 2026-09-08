@@ -77,7 +77,7 @@ export const getCareerOverview = createServerFn({ method: "GET" })
 /** Runs (or re-runs) the Company-Specific Career Gap & Rejection engine. */
 export const runDiagnosis = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input?: { company?: string; role?: string }) => {
+  .validator((input?: { company?: string; role?: string }) => {
     return {
       company: text(input?.company, 160) || undefined,
       role: text(input?.role, 160) || undefined,
@@ -109,7 +109,7 @@ export const runDiagnosis = createServerFn({ method: "POST" })
 
 export const setCareerTarget = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { role?: string; industry?: string; recommendationId?: string }) => {
+  .validator((input: { role?: string; industry?: string; recommendationId?: string }) => {
     const role = text(input?.role, 120);
     const recommendationId = text(input?.recommendationId, 60);
     if (!role && !recommendationId) throw new Error("Please choose or enter a target role.");
@@ -132,7 +132,7 @@ export const setCareerTarget = createServerFn({ method: "POST" })
 
 export const analyzeJobDescription = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { title?: string; company?: string; description?: string }) => {
+  .validator((input: { title?: string; company?: string; description?: string }) => {
     const title = text(input?.title, 160);
     const description = String(input?.description ?? "").trim();
     if (!title) throw new Error("Add the job title.");
@@ -147,7 +147,7 @@ export const analyzeJobDescription = createServerFn({ method: "POST" })
 
 export const addSkillEvidence = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { source?: string; detail?: string; skills?: string[] }) => {
+  .validator((input: { source?: string; detail?: string; skills?: string[] }) => {
     const source: "github" | "project" | null =
       input?.source === "github" || input?.source === "project" ? input.source : null;
     if (!source) throw new Error("Choose GitHub or project evidence.");
@@ -163,7 +163,7 @@ export const addSkillEvidence = createServerFn({ method: "POST" })
 
 export const runDiscovery = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
+  .validator(
     (input: {
       interests?: string;
       strengths?: string;
@@ -218,7 +218,7 @@ export type DiagnosticIntakeInput = {
 
 export const saveDiagnosticIntake = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: DiagnosticIntakeInput) => {
+  .validator((input: DiagnosticIntakeInput) => {
     const languagesFrameworks = text(input?.languagesFrameworks, 500);
     const primaryCareerGoal = text(input?.primaryCareerGoal, 200);
     const biggestBlocker = text(input?.biggestBlocker, 500);

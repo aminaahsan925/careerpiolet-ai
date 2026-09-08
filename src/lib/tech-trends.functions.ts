@@ -51,7 +51,7 @@ export const getTechTrendsFresh = createServerFn({ method: "GET" })
 /** Get detailed information about a specific technology. */
 export const getTechTrendDetail = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { technologyName: string }) => {
+  .validator((input: { technologyName: string }) => {
     const name = String(input?.technologyName ?? "").trim();
     if (!name) throw new Error("Please specify a technology name.");
     if (name.length > 120) throw new Error("Technology name is too long.");
@@ -82,7 +82,7 @@ export const getTechTrendDetail = createServerFn({ method: "GET" })
 /** Update a user's technology learning tracking status. */
 export const updateTechTracking = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { technologyName: string; status: string }) => {
+  .validator((input: { technologyName: string; status: string }) => {
     const name = String(input?.technologyName ?? "").trim();
     const status = String(input?.status ?? "want_to_learn").trim();
     if (!name) throw new Error("Please specify a technology name.");

@@ -114,7 +114,11 @@ export function useUploadAndAnalyze() {
         })
         .select("id")
         .single();
-      if (insertError) throw insertError;
+      if (insertError) {
+        // Avoid leaving private files behind when the metadata row cannot be saved.
+        await supabase.storage.from("resumes").remove([path]);
+        throw insertError;
+      }
 
       return analyzeResume({ data: { resumeId: resume.id as string } });
     },

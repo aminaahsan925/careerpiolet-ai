@@ -267,7 +267,7 @@ function ProfilePage() {
     try {
       const fileExt = file.name.split(".").pop();
       const fileName = `${user.userId}-${Date.now()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
+      const filePath = `${user.userId}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")

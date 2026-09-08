@@ -10,7 +10,7 @@ const text = (v: unknown, max: number) =>
 /** Runs the Brutal Honest Recruiter Audit engine for a target company. */
 export const runRecruiterAuditFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input?: { company?: string; role?: string }) => {
+  .validator((input?: { company?: string; role?: string }) => {
     return {
       company: text(input?.company, 160) || undefined,
       role: text(input?.role, 160) || undefined,
@@ -42,7 +42,7 @@ export const runRecruiterAuditFn = createServerFn({ method: "POST" })
 /** Sends a message to the AI recruiter and gets a response. */
 export const chatWithRecruiterFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { sessionId: string; message: string }) => {
+  .validator((input: { sessionId: string; message: string }) => {
     const sessionId = text(input?.sessionId, 60);
     const message = text(input?.message, 2000);
     if (!sessionId) throw new Error("Session ID is required.");

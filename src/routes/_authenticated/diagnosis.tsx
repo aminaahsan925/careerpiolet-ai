@@ -561,9 +561,10 @@ function DiagnosticResultsView({
         <div className="pointer-events-none absolute -bottom-14 -right-14 h-72 w-72 rounded-full bg-terracotta/25 blur-3xl animate-pulse" />
         <div className="pointer-events-none absolute -top-10 -left-10 h-48 w-48 rounded-full bg-clay/20 blur-3xl" />
 
-        <div className="relative z-10 flex flex-wrap items-center justify-between gap-6 lg:pr-[320px]">
-          <div className="max-w-xl space-y-3">
-            <div className="flex items-center gap-2 flex-wrap">
+        <div className="relative z-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(280px,390px)] lg:items-center">
+          <div className="min-w-0 space-y-6">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-terracotta/20 px-3.5 py-1 text-xs font-bold text-terracotta border border-terracotta/30 shadow-xs">
                 <Building2 className="h-3.5 w-3.5" /> Technical Audit Verdict
               </span>
@@ -572,64 +573,63 @@ function DiagnosticResultsView({
               </span>
             </div>
 
-            <h1 className="font-display text-2xl font-black sm:text-3xl lg:text-4xl leading-tight">
-              Rejection Diagnosis: <br />
-              <span className="text-terracotta underline decoration-terracotta/40 underline-offset-4">
-                {companyDiag.riskTier}
-              </span>
-            </h1>
-
-            <p className="text-xs leading-relaxed text-white/75 sm:text-sm">
-              Audited for <strong className="text-white">{d.targetRole}</strong> @{" "}
-              <strong className="text-terracotta">{companyDiag.companyName}</strong>. Automated
-              screening systems and engineering leads will flag your profile due to missing
-              production proof artifacts and unverified technical depth.
-            </p>
-          </div>
-
-          {/* Metric Ring & Action Pill */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-md shadow-inner">
-            <div className="flex items-center gap-3">
-              <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-terracotta/20 border-2 border-terracotta/60 shadow-lg">
-                <span className="text-xl font-black text-terracotta">
-                  {companyDiag.rejectionRisk}%
+              <h1 className="font-display text-2xl font-black leading-tight sm:text-3xl lg:text-4xl">
+                Rejection Diagnosis: <br />
+                <span className="text-terracotta underline decoration-terracotta/40 underline-offset-4">
+                  {companyDiag.riskTier}
                 </span>
-              </div>
-              <div className="text-left">
-                <p className="text-xs font-black uppercase tracking-wider text-white">
-                  Rejection Risk
-                </p>
-                <p className="text-[11px] text-white/60">Screening Failure Rate</p>
-              </div>
+              </h1>
+
+              <p className="text-xs leading-relaxed text-white/75 sm:text-sm">
+                Audited for <strong className="text-white">{d.targetRole}</strong> @{" "}
+                <strong className="text-terracotta">{companyDiag.companyName}</strong>. Automated
+                screening systems and engineering leads will flag your profile due to missing
+                production proof artifacts and unverified technical depth.
+              </p>
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-10 rounded-xl border-white/20 bg-white/10 text-xs font-bold text-white hover:bg-white/20 shadow-xs"
-              disabled={isRerunning}
-              onClick={() =>
-                onRerun(companyDiag.companyName, d.targetRole || "Associate Software Engineer")
-              }
-            >
-              {isRerunning ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <>
-                  <RefreshCw className="h-3.5 w-3.5 mr-1.5 text-terracotta" /> Re-audit Standard
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
+            <div className="flex flex-col items-center gap-4 rounded-2xl border border-white/15 bg-white/10 p-5 shadow-inner backdrop-blur-md sm:flex-row">
+              <div className="flex items-center gap-3">
+                <div className="relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-terracotta/60 bg-terracotta/20 shadow-lg">
+                  <span className="text-xl font-black text-terracotta">
+                    {companyDiag.rejectionRisk}%
+                  </span>
+                </div>
+                <div className="text-left">
+                  <p className="text-xs font-black uppercase tracking-wider text-white">
+                    Rejection Risk
+                  </p>
+                  <p className="text-[11px] text-white/60">Screening Failure Rate</p>
+                </div>
+              </div>
 
-        <div className="pointer-events-none absolute bottom-0 right-0 z-10 hidden h-[330px] w-[350px] lg:block xl:right-8 xl:h-[360px] xl:w-[390px]">
-          <div className="absolute bottom-8 right-8 h-56 w-56 rounded-full bg-terracotta/20 blur-3xl" />
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-10 rounded-xl border-white/20 bg-white/10 text-xs font-bold text-white shadow-xs hover:bg-white/20"
+                disabled={isRerunning}
+                onClick={() =>
+                  onRerun(companyDiag.companyName, d.targetRole || "Associate Software Engineer")
+                }
+              >
+                {isRerunning ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <>
+                    <RefreshCw className="mr-1.5 h-3.5 w-3.5 text-terracotta" /> Re-audit Standard
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          <div className="hidden min-h-[280px] items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/95 p-4 shadow-2xl lg:flex">
           <img
             src="/careerpilot-learning-illustration.png"
             alt="Student learning career skills on a laptop"
-            className="relative h-full w-full object-contain mix-blend-multiply opacity-90"
+            className="h-full w-full object-contain"
           />
+          </div>
         </div>
       </section>
 

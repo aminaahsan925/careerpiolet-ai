@@ -75,7 +75,7 @@ export const getTodayWorkFn = createServerFn({ method: "GET" })
 /** Every day of work for one learning path, ordered by day number. */
 export const getDailyWorkByPathFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { pathId?: string }) => ({
+  .validator((input: { pathId?: string }) => ({
     pathId: id(input?.pathId, "A learning path"),
   }))
   .handler(async ({ data, context }) => {
@@ -86,7 +86,7 @@ export const getDailyWorkByPathFn = createServerFn({ method: "GET" })
 /** Claim a day's work is done — reports whether the MCQ gate still applies. */
 export const claimDayCompleteFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { dayId?: string }) => ({
+  .validator((input: { dayId?: string }) => ({
     dayId: id(input?.dayId, "A day of work"),
   }))
   .handler(async ({ data, context }) => {
@@ -97,7 +97,7 @@ export const claimDayCompleteFn = createServerFn({ method: "POST" })
 /** The MCQ gate questions for a day's path (correct answers withheld). */
 export const getMcqsForDayFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { dayId?: string }) => ({
+  .validator((input: { dayId?: string }) => ({
     dayId: id(input?.dayId, "A day of work"),
   }))
   .handler(async ({ data, context }) => {
@@ -108,7 +108,7 @@ export const getMcqsForDayFn = createServerFn({ method: "GET" })
 /** Submit a day's MCQ answers — grades, records the attempt, applies side effects. */
 export const submitMcqFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
+  .validator(
     (input: {
       dayId?: string;
       answers?: Array<{ questionId?: string; selectedOption?: string }>;
@@ -157,7 +157,7 @@ export const submitMcqFn = createServerFn({ method: "POST" })
 /** Previous MCQ attempts for a day, newest first. */
 export const getMcqHistoryFn = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { dayId?: string }) => ({
+  .validator((input: { dayId?: string }) => ({
     dayId: id(input?.dayId, "A day of work"),
   }))
   .handler(async ({ data, context }) => {
@@ -184,7 +184,7 @@ export const getAllNotificationsFn = createServerFn({ method: "GET" })
 /** Mark a single notification as read. */
 export const markNotificationReadFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { notificationId?: string }) => ({
+  .validator((input: { notificationId?: string }) => ({
     notificationId: id(input?.notificationId, "A notification"),
   }))
   .handler(async ({ data, context }) => {

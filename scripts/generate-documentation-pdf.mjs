@@ -1,13 +1,12 @@
 /**
- * CareerPilot AI — Supporting Documentation PDF generator.
+ * CareerPilot AI - Full product documentation PDF generator.
  *
  * Rebuilds output/pdf/careerpilot-ai-supporting-documentation.pdf and the
- * root-level CareerPilot-AI-Hackathon-Documentation.pdf. The previous
- * document rendered its section-divider pages nearly blank (only a running
- * header and a lone page number), which made the hosted file look broken.
- * This generator keeps every section of the old document, adds a Table of
- * Contents and a "Winning Strategy" chapter, and draws real content on
- * every page.
+ * root-level and public CareerPilot-AI-Hackathon-Documentation.pdf files. The
+ * document is written for hackathon judges, evaluators, mentors, and future
+ * contributors. It explains the problem, product workflow, every major
+ * feature, diagnostic and resume intelligence, architecture, data model,
+ * security, demonstration flow, and next steps.
  *
  * Usage: npm run docs:pdf
  */
@@ -21,6 +20,7 @@ const ROOT = path.resolve(__dirname, "..");
 const OUT_DIR = path.join(ROOT, "output", "pdf");
 const OUT_FILE = path.join(OUT_DIR, "careerpilot-ai-supporting-documentation.pdf");
 const ROOT_FILE = path.join(ROOT, "CareerPilot-AI-Hackathon-Documentation.pdf");
+const PUBLIC_FILE = path.join(ROOT, "public", "CareerPilot-AI-Hackathon-Documentation.pdf");
 
 // Brand palette converted from the OKLCH tokens in src/styles.css.
 const COLOR = {
@@ -128,9 +128,12 @@ function sectionHeading(doc, num, title) {
   doc.y += 20;
 }
 
-/** Start a section without wasting a page when the current page has room. */
+/** Start a major section on a predictable page with enough room for content. */
 function sectionStart(doc, num, title, opts = {}) {
-  if (opts.pageBreak) newPage(doc);
+  // Give every major section a reliable visual starting point. Without this,
+  // a section can begin at the bottom of a previous page and its continuation
+  // can look like an empty or broken divider page in PDF viewers.
+  if (opts.pageBreak ?? true) newPage(doc);
   else ensureRoom(doc, opts.minimumRoom ?? 190);
   sectionHeading(doc, num, title);
 }
@@ -412,16 +415,22 @@ function drawTableOfContents(doc) {
 
   const entries = [
     ["1", "Executive Summary"],
-    ["2", "Problem and Audience"],
-    ["3", "Solution and User Journey"],
-    ["4", "Key Capabilities"],
-    ["5", "Innovation"],
-    ["6", "Technology and Architecture"],
-    ["7", "What Has Been Built"],
-    ["8", "Impact and Feasibility"],
-    ["9", "Demonstration Flow"],
-    ["10", "Winning Strategy"],
-    ["11", "Why CareerPilot Matters"],
+    ["2", "Problem, Audience, and Context"],
+    ["3", "Product Model and User Journey"],
+    ["4", "Onboarding and Career Profile"],
+    ["5", "Dashboard and Career State"],
+    ["6", "Career Diagnosis and Readiness"],
+    ["7", "Market Reality and Future Tech"],
+    ["8", "Roadmap and Daily Execution"],
+    ["9", "Flight Plan and Job Readiness"],
+    ["10", "Resume Intelligence and ATS"],
+    ["11", "Interview Preparation and Job Mirror"],
+    ["12", "Recruiter Audit"],
+    ["13", "AI Mentor and Progress System"],
+    ["14", "Technical Architecture and Security"],
+    ["15", "Data Model and Persistence"],
+    ["16", "Demonstration and Evaluation Guide"],
+    ["17", "Impact, Feasibility, and Next Steps"],
   ];
   entries.forEach(([num, title]) => {
     ensureRoom(doc, 22);
@@ -443,7 +452,7 @@ function drawTableOfContents(doc) {
   quotePanel(
     doc,
     "HOW TO READ THIS DOCUMENT",
-    "This document accompanies the live prototype and the public repository. Section 10, Winning Strategy, is written for hackathon judges: it states what makes this entry defensible under evaluation criteria and where the project goes next.",
+    "This document is a complete guide to the deployed prototype. It is organized around the actual product experience so a reader can understand what the student sees, what the system stores, how AI is used, and what a judge can verify.",
     { height: 74, font: "Body", size: 8.5, fill: COLOR.secondary, stroke: COLOR.border },
   );
 }
@@ -473,7 +482,7 @@ function section1(doc) {
 }
 
 function section2(doc) {
-  sectionStart(doc, 2, "Problem and Audience");
+  sectionStart(doc, 2, "Problem, Audience, and Context");
   paragraph(
     doc,
     "Students in Pakistan and other emerging markets often learn without a clear target. They do not know which skills matter for a specific job, why applications fail, what projects employers value, or how to prepare for interviews. Students outside major cities may also lack access to mentors, professional networks, and expensive career programs.",
@@ -806,6 +815,10 @@ function section10(doc) {
     },
   ]);
 
+  // Section 10 is intentionally long. If the first page is full, label the
+  // continuation instead of leaving a page that looks like an orphaned tail.
+  ensureRoom(doc, 150);
+  if (doc.y <= TOP_Y + 8) sectionHeading(doc, 10, "Winning Strategy - continued");
   paragraph(doc, "Risk mitigation and honesty", { bold: true, after: 10 });
   titledRows(doc, [
     {
@@ -821,6 +834,20 @@ function section10(doc) {
       body: "The prototype deliberately executes one journey deeply instead of many shallow ones. Post-hackathon expansion (Section 11) is sequenced, not hand-waved.",
     },
   ]);
+
+  paragraph(doc, "What a judge can verify in the live product", { bold: true, after: 8 });
+  bullets(doc, [
+    "A target role and company are carried from onboarding into diagnosis, market reality, roadmap, and recruiter feedback.",
+    "A practical task can be completed and its progress remains visible after navigation or refresh.",
+    "Assessment results include explanations, while recruiter feedback is tied to the student's stored evidence.",
+    "The public repository and deployed application make the architecture, security model, and working journey inspectable.",
+  ], { size: 8.5, gap: 3 });
+  quotePanel(
+    doc,
+    "EVALUATION PROOF",
+    "The strongest evidence is not a promise about what CareerPilot could become; it is the connected journey a judge can use today.",
+    { height: 70, font: "Body-BoldItalic", size: 9.5, fill: COLOR.secondary, stroke: COLOR.border },
+  );
 }
 
 function section11(doc) {
@@ -893,20 +920,494 @@ function section11(doc) {
   );
 }
 
+/* ---------------------------------------------------------- full guide */
+
+function fullSection4(doc) {
+  sectionStart(doc, 4, "Onboarding and Career Profile");
+  paragraph(
+    doc,
+    "CareerPilot begins by building a structured profile instead of asking the student to start with a generic chatbot question. The onboarding flow is a guided, nine-step setup that captures the learner's starting point, constraints, evidence, and target direction.",
+  );
+  titledRows(doc, [
+    {
+      title: "About You",
+      body: "Name, current status, and the learner's present situation establish the context used across the workspace.",
+    },
+    {
+      title: "Education",
+      body: "Education level, degree, university, academic year, and graduation timing help the system understand the learner's stage.",
+    },
+    {
+      title: "Experience",
+      body: "The student records academic work, personal projects, freelance work, internships, professional work, and open-source contributions.",
+    },
+    {
+      title: "Projects",
+      body: "Each project can include a name, description, technologies, project type, and public URL. This becomes evidence that later modules can inspect.",
+    },
+    {
+      title: "Skills",
+      body: "Students select skills from the catalog, add custom skills, and describe confidence as beginner, comfortable, or strong.",
+    },
+    {
+      title: "Career Direction",
+      body: "Learning history, career clarity, certifications, and target role help separate an uncertain learner from someone ready for focused progression.",
+    },
+    {
+      title: "Situation and Constraints",
+      body: "The student identifies the biggest blocker, how well education prepared them, and the weekly time available for learning.",
+    },
+  ]);
+  quotePanel(
+    doc,
+    "WHY THIS MATTERS",
+    "The profile is the shared context behind diagnosis, market research, roadmap generation, resume matching, mentor guidance, and recruiter feedback.",
+    { height: 72 },
+  );
+}
+
+function fullSection5(doc) {
+  sectionStart(doc, 5, "Dashboard and Career State");
+  paragraph(
+    doc,
+    "The dashboard is the student's career command center. It brings readiness signals, the next action, roadmap status, applications, skills, market context, and mentor access into one view. It is designed to answer one practical question: what should I do next?",
+  );
+  table(
+    doc,
+    ["Dashboard area", "Purpose"],
+    [
+      ["Readiness cards", "Show career, resume, interview, and evidence signals when the student has completed the relevant analysis."],
+      ["Career diagnosis", "Surfaces career stage, the main blocker, and the next best action."],
+      ["Recommended roadmap", "Shows current learning stage, progress, and upcoming work."],
+      ["Applications", "Tracks companies, roles, application status, interview dates, notes, and outcomes."],
+      ["Top skills", "Keeps the student's recorded skill inventory visible and connected to resume evidence."],
+      ["Market Reality", "Links the student's target role to employer expectations and demand signals."],
+      ["Today's Plan", "Provides a focused daily action rather than an open-ended list of courses."],
+      ["AI Resume Review", "Shows whether the resume has been analyzed and directs the student to the next improvement."],
+    ],
+    [125, CONTENT_WIDTH - 125],
+  );
+  paragraph(
+    doc,
+    "The dashboard reads from a single career state assembled on the server. That state combines profile, goal, skills, projects, resume analysis, diagnosis, readiness, roadmap progress, and target context. This prevents each page from giving advice from a different version of the student.",
+  );
+}
+
+function fullSection6(doc) {
+  sectionStart(doc, 6, "Career Diagnosis and Readiness");
+  paragraph(
+    doc,
+    "Diagnosis is the product's central reasoning feature. It audits the student's profile against a selected role and company, then explains what is missing, why the gap matters, and what evidence should be produced next.",
+  );
+  paragraph(
+    doc,
+    "The diagnosis wizard has three explicit decisions: select the target employer, select the target position, and launch the rejection diagnosis. A custom company can be entered when the employer is not in the featured list. The system can also match a company truth profile to known employer expectations.",
+    { after: 12 },
+  );
+  titledRows(doc, [
+    {
+      title: "Readiness score and breakdown",
+      body: "The system stores an overall readiness value, career stage, and a breakdown of the factors that influence the student's current position.",
+    },
+    {
+      title: "Strengths",
+      body: "The report records genuine strengths found in the student's saved profile and evidence. The diagnostic instructions explicitly avoid inventing strengths.",
+    },
+    {
+      title: "Blockers and rejection risks",
+      body: "Each blocker includes the problem, supporting evidence, why it matters from a hiring perspective, and a fix that the student can act on.",
+    },
+    {
+      title: "Priorities",
+      body: "The report ranks the most important work and connects each priority to the evidence the student should produce.",
+    },
+    {
+      title: "Next best action",
+      body: "The student receives one immediate action with a reason and a definition of the proof that would make the action credible.",
+    },
+    {
+      title: "Recovery sequence",
+      body: "The result is ordered into now, next, and after stages so the student can work through a realistic progression.",
+    },
+  ]);
+  quotePanel(
+    doc,
+    "DIAGNOSTIC PRINCIPLE",
+    "A listed skill is a claim. A deployed project, measurable outcome, or explained technical decision is evidence.",
+    { height: 72, fill: COLOR.ink, stroke: COLOR.ink, labelColor: COLOR.accent, textColor: COLOR.white },
+  );
+}
+
+function fullSection7(doc) {
+  sectionStart(doc, 7, "Market Reality and Future Tech");
+  paragraph(
+    doc,
+    "Market Reality gives the student a reference point outside their own assumptions. It connects the target role to employer expectations, demand signals, salary context, skill gaps, and future technology trends. The page supports global research and optional Pakistan-focused context.",
+  );
+  stepGrid(doc, [
+    { title: "Role signal", body: "Identify the skills, responsibilities, and proof expected for the selected role." },
+    { title: "Company signal", body: "Use the target company and researched employer context to make the guidance more specific." },
+    { title: "Local lens", body: "Review Pakistan-focused opportunities and salary context alongside remote and global paths." },
+    { title: "Demand signal", body: "Separate established skills from high-growth areas and technologies that deserve monitoring." },
+    { title: "Source layer", body: "Show research sources and summaries so the student can inspect where market claims came from." },
+    { title: "Action layer", body: "Save a technology to a learning track or add a market-relevant skill to the roadmap." },
+  ]);
+  paragraph(
+    doc,
+    "Future Tech is a guided research experience rather than a list of buzzwords. Each technology can be explored through four questions: what it is, why it matters, whether the student should learn it, and how to learn it. The detail view can include prerequisites, use cases, career relevance, confidence, a learning path, a first project, sources, and personal tracking status.",
+  );
+}
+
+function fullSection8(doc) {
+  sectionStart(doc, 8, "Roadmap and Daily Execution");
+  paragraph(
+    doc,
+    "The roadmap converts diagnosis into a sequence of learning stages. It is personalized from the student's profile, target role, evidence, available weekly time, and market context. The product treats learning as work that should produce visible proof.",
+  );
+  titledRows(doc, [
+    {
+      title: "Learning stage",
+      body: "Each stage has a title, explanation, expected outcome, and practical context so the student understands why it exists.",
+    },
+    {
+      title: "Daily task",
+      body: "A roadmap day can include an explanation, a concrete task, a project direction, and a definition of done.",
+    },
+    {
+      title: "Skill and evidence link",
+      body: "The work is connected to the skill gap and the evidence the student needs for the target role.",
+    },
+    {
+      title: "Completion tracking",
+      body: "Students can mark practical work complete. Progress remains available after navigation and refresh because it is persisted.",
+    },
+    {
+      title: "Assessment checkpoint",
+      body: "Role-specific MCQs test understanding and return explanations instead of only showing a score.",
+    },
+    {
+      title: "Certificate",
+      body: "When the learning path is complete, the product can display a CareerPilot completion certificate for the selected target role.",
+    },
+  ]);
+  paragraph(
+    doc,
+    "This design keeps CareerPilot focused on a small number of meaningful actions. The student does not only consume recommendations. The student completes work, records progress, and builds a portfolio trail.",
+  );
+}
+
+function fullSection9(doc) {
+  sectionStart(doc, 9, "Flight Plan and Job Readiness");
+  paragraph(
+    doc,
+    "Flight Plan is the job-description readiness workflow. It translates a specific vacancy into a practical comparison between what the role asks for and what the student's saved profile can prove.",
+  );
+  table(
+    doc,
+    ["Flight Plan stage", "What the student receives"],
+    [
+      ["Target role selection", "A selected or entered role becomes the assessment target."],
+      ["Job description input", "The system receives the role requirements that matter for this application."],
+      ["Skill mirror", "Required skills are compared with the student's recorded skills and evidence."],
+      ["Rejection truth", "The product explains the most likely reasons the application could fail screening."],
+      ["Market truth note", "The student sees how market expectations affect the readiness judgment."],
+      ["Fit verdict", "The result summarizes current fit and the gap that must be closed."],
+      ["Action plan", "The student gets practical next steps instead of a generic fit percentage."],
+    ],
+    [125, CONTENT_WIDTH - 125],
+  );
+  quotePanel(
+    doc,
+    "PRODUCT VALUE",
+    "Flight Plan turns a job description into a preparation plan before the student spends time applying.",
+    { height: 68 },
+  );
+}
+
+function fullSection10(doc) {
+  sectionStart(doc, 10, "Resume Intelligence and ATS");
+  paragraph(
+    doc,
+    "Resume Intelligence is a complete upload, parsing, scoring, and positioning workflow. Students can upload a PDF, DOCX, or TXT resume up to 5 MB. The interface supports file selection and drag-and-drop, then stores the active file and latest analysis.",
+  );
+  table(
+    doc,
+    ["Resume output", "What it explains"],
+    [
+      ["ATS Score", "Keyword and format fit based on structural checks and target-role alignment."],
+      ["Impact Score", "Use of action verbs, measurable outcomes, and stronger accomplishment framing."],
+      ["Role Match", "Compatibility between the resume and the student's target role."],
+      ["Executive Summary", "A recruiter-style summary of the current presentation."],
+      ["Competitive Strengths", "The strongest signals already present in the resume."],
+      ["ATS Red Flags and Gaps", "Missing details, weak phrasing, structure problems, or evidence gaps."],
+      ["Positioning Rewrites", "High-impact recommendations with an explanation of why each change matters."],
+      ["Extracted Skills", "Technical skills detected from the resume text."],
+      ["Market Target Compatibility", "Role matches compared with researched industry roles."],
+    ],
+    [145, CONTENT_WIDTH - 145],
+  );
+  paragraph(
+    doc,
+    "The analysis is grounded in the student's saved career goal and is synchronized back into the shared career state. Resume evidence can therefore influence diagnosis, readiness, recruiter audit, mentor context, and dashboard scores.",
+  );
+  quotePanel(
+    doc,
+    "RESUME POLICY",
+    "CareerPilot treats a resume as evidence that must support the target role, not as a document that only needs attractive formatting.",
+    { height: 70, fill: COLOR.secondary, stroke: COLOR.border },
+  );
+}
+
+function fullSection11(doc) {
+  sectionStart(doc, 11, "Interview Preparation and Job Mirror");
+  paragraph(
+    doc,
+    "Interview Prep turns the selected role into a focused practice plan. It gives the student a role-specific interview intelligence view instead of a generic list of questions.",
+  );
+  titledRows(doc, [
+    {
+      title: "Answer Lab",
+      body: "Students practice responses and refine how they explain decisions, projects, trade-offs, and outcomes.",
+    },
+    {
+      title: "Evidence to bring",
+      body: "The product identifies the projects, metrics, links, and examples that should support the student's claims in an interview.",
+    },
+    {
+      title: "Expected interview stages",
+      body: "The student can prepare for technical screening, project discussion, behavioral questions, and company-specific evaluation.",
+    },
+    {
+      title: "Job Mirror",
+      body: "The role is reflected back as an employer expectation model, showing what the student should know and what proof would make the claim believable.",
+    },
+  ]);
+  paragraph(
+    doc,
+    "The value of this module is alignment. Interview practice, resume positioning, roadmap work, and recruiter feedback all point toward the same target role and evidence base.",
+  );
+}
+
+function fullSection12(doc) {
+  sectionStart(doc, 12, "Recruiter Audit");
+  paragraph(
+    doc,
+    "Recruiter Audit simulates a hiring review of the student's profile. It is built around the question a recruiter or technical reviewer would ask: is there enough credible evidence to move this candidate to the next stage?",
+  );
+  titledRows(doc, [
+    {
+      title: "Candidate snapshot",
+      body: "The audit uses the target role, target company, profile, skills, projects, resume analysis, diagnosis, and readiness context.",
+    },
+    {
+      title: "Recruiter perspective",
+      body: "The report identifies red flags, missing production proof, unclear positioning, and risks that may prevent an interview invitation.",
+    },
+    {
+      title: "Evidence review",
+      body: "Projects and resume claims are inspected as proof. Public URLs and measurable outcomes carry more weight than unverified lists of tools.",
+    },
+    {
+      title: "Persistent recruiter session",
+      body: "The recruiter conversation is stored so the student can return to the same audit context and continue improving the profile.",
+    },
+    {
+      title: "Pipeline context",
+      body: "The interface presents the review as a hiring pipeline with clear movement from profile audit to interview readiness.",
+    },
+  ]);
+  quotePanel(
+    doc,
+    "RECRUITER TEST",
+    "If a student says they know a technology, the audit asks what they built, deployed, measured, and can explain.",
+    { height: 70, fill: COLOR.ink, stroke: COLOR.ink, labelColor: COLOR.accent, textColor: COLOR.white },
+  );
+}
+
+function fullSection13(doc) {
+  sectionStart(doc, 13, "AI Mentor and Progress System");
+  paragraph(
+    doc,
+    "The AI Mentor is context-aware. It does not start every conversation from zero. The server builds a career context from the student's profile, goals, skills, projects, resume analysis, diagnosis, readiness, and roadmap progress before generating a response.",
+  );
+  bullets(doc, [
+    "Suggested questions help students start with common career decisions.",
+    "Career insights summarize the current state and expose the next useful question.",
+    "Recommended actions connect mentor advice to roadmap, resume, diagnosis, or interview work.",
+    "Chat history is stored so the student can return to an ongoing coaching conversation.",
+    "The mentor is designed for direct, specific guidance rather than generic encouragement.",
+  ]);
+  paragraph(
+    doc,
+    "The progress system completes the loop. Notifications can surface roadmap progress, assessment events, and career nudges. The dashboard summarizes the same progress, and the certificate provides a visible completion outcome when the path is finished.",
+  );
+  paragraph(
+    doc,
+    "Profile remains editable after onboarding. Students can update basic information, knowledge, skills, avatar, projects, and account details as their evidence improves.",
+  );
+}
+
+function fullSection14(doc) {
+  sectionStart(doc, 14, "Technical Architecture and Security");
+  paragraph(
+    doc,
+    "CareerPilot uses a React and TypeScript client with TanStack Router and TanStack Query. Reusable UI components, server functions, loading states, error handling, and cached queries keep the product maintainable as the feature set grows.",
+  );
+  table(
+    doc,
+    ["Layer", "Implementation"],
+    [
+      ["Client", "React 19, TypeScript, TanStack Router, TanStack Query, Tailwind CSS, Motion, and reusable UI components."],
+      ["Server functions", "Authenticated functions validate input, load user-scoped state, call AI or research providers, and persist results."],
+      ["Database", "Supabase PostgreSQL stores profiles, goals, skills, projects, resumes, diagnoses, roadmaps, assessments, applications, notifications, and recruiter sessions."],
+      ["Storage", "Supabase Storage supports user files such as resumes and avatars with user-scoped access."],
+      ["AI providers", "Groq, Gemini, and OpenRouter can be selected through server-side configuration with fallback handling."],
+      ["Research", "Tavily-backed research supports market and technology intelligence with cached results and source links."],
+      ["Deployment", "Vercel provides the serverless deployment target for the working prototype."],
+    ],
+    [125, CONTENT_WIDTH - 125],
+  );
+  titledRows(doc, [
+    {
+      title: "Credential boundary",
+      body: "Privileged AI and research keys remain on the server. The browser receives only the data needed for the authenticated experience.",
+    },
+    {
+      title: "User isolation",
+      body: "Row Level Security and user-scoped queries protect personal profiles, resumes, projects, progress, and conversations.",
+    },
+    {
+      title: "Validation and fallback",
+      body: "Server validation protects assessment and profile operations. Provider fallback and cached results keep core workflows useful when an external service is unavailable.",
+    },
+  ]);
+}
+
+function fullSection15(doc) {
+  sectionStart(doc, 15, "Data Model and Persistence");
+  paragraph(
+    doc,
+    "The product is persistent by design. Important actions create or update records instead of living only in browser state. This is what makes the experience resume-able after refresh and allows multiple modules to share the same career context.",
+  );
+  table(
+    doc,
+    ["Data area", "Stored information"],
+    [
+      ["Identity and profile", "Authentication identity, name, education, status, university, goals, weekly time, and career context."],
+      ["Skills", "Skill catalog selections, custom skills, confidence, and evidence strength."],
+      ["Projects", "Project name, description, technologies, URL, project type, and evidence metadata."],
+      ["Career target", "Target role, target industry, target job, and company context."],
+      ["Diagnosis", "Readiness, stage, strengths, blockers, priorities, next best action, sequence, and market benchmark."],
+      ["Resume", "Uploaded file metadata, parsed analysis, scores, skills, weaknesses, recommendations, and role matches."],
+      ["Roadmap", "Generated stages, days, task content, completion, assessments, attempts, and certificate status."],
+      ["Engagement", "Applications, notifications, mentor chat messages, recruiter sessions, and future-tech tracking."],
+    ],
+    [125, CONTENT_WIDTH - 125],
+  );
+  paragraph(
+    doc,
+    "The database migration history shows the product evolving through added diagnostic intakes, market reality caching, user projects, technology tracking, roadmap versioning, resume storage fixes, and recruiter sessions. That history reflects an iterative prototype rather than a static mockup.",
+  );
+}
+
+function fullSection16(doc) {
+  sectionStart(doc, 16, "Demonstration and Evaluation Guide");
+  paragraph(
+    doc,
+    "A strong demonstration should show the relationship between modules, not only open isolated pages. The following sequence gives a judge the clearest view of the product's value.",
+  );
+  const steps = [
+    ["Profile", "Open or create a student account and complete the Know Me onboarding flow."],
+    ["Target", "Select a target role and company, or enter a custom company."],
+    ["Diagnosis", "Run the company-specific diagnosis and review blockers, priorities, and next action."],
+    ["Market", "Open Market Reality to inspect role expectations, demand, local context, and sources."],
+    ["Resume", "Upload a PDF, DOCX, or TXT resume and review ATS, impact, and role-match scores."],
+    ["Plan", "Generate the personalized roadmap and open the first practical day."],
+    ["Proof", "Complete a task, take the MCQ, and inspect the explanation and saved progress."],
+    ["Interview", "Open Job Mirror and practice a role-specific answer with the evidence to bring."],
+    ["Recruiter", "Run Recruiter Audit to see how the same evidence looks from an employer's perspective."],
+    ["Mentor", "Ask the AI Mentor for the next action and show that it remembers the student's context."],
+  ];
+  steps.forEach(([title, body], index) => {
+    ensureRoom(doc, 39);
+    const y = doc.y;
+    doc.save();
+    doc.fillColor(COLOR.cream).circle(MARGIN + 12, y + 10, 10).fill();
+    doc.restore();
+    doc.font("Helvetica-Bold").fontSize(8.5).fillColor(COLOR.primary).text(String(index + 1), MARGIN + 9, y + 5, { lineBreak: false });
+    doc.font("Helvetica-Bold").fontSize(9.5).fillColor(COLOR.ink).text(title, MARGIN + 32, y + 2, { lineBreak: false });
+    doc.font("Body").fontSize(8.8).fillColor(COLOR.muted).text(body, MARGIN + 32, y + 16, { width: CONTENT_WIDTH - 32, lineGap: 2 });
+    doc.y = y + 34;
+  });
+  quotePanel(
+    doc,
+    "WHAT THE JUDGE SHOULD REMEMBER",
+    "CareerPilot carries one target and one evidence base through the entire product journey. Every module answers the question raised by the previous module.",
+    { height: 76, fill: COLOR.secondary, stroke: COLOR.border },
+  );
+}
+
+function fullSection17(doc) {
+  sectionStart(doc, 17, "Impact, Feasibility, and Next Steps");
+  paragraph(
+    doc,
+    "CareerPilot addresses a practical challenge for Pakistan and other emerging markets: educated people often need clearer information, stronger proof, and more structured support before they can compete for work. The product turns that challenge into a measurable personal workflow.",
+  );
+  titledRows(doc, [
+    {
+      title: "Immediate value",
+      body: "Students can see the distance between their current evidence and the expectations of a target role instead of relying on guesswork.",
+    },
+    {
+      title: "Accessible guidance",
+      body: "The AI Mentor, diagnosis, and roadmap make context-aware guidance available without requiring every student to find a private mentor.",
+    },
+    {
+      title: "Low-cost foundation",
+      body: "Serverless deployment, cached research, provider fallback, and Supabase persistence create a practical foundation for a hackathon-scale product.",
+    },
+    {
+      title: "Institutional potential",
+      body: "Universities and training programs could use the same structure to track learner readiness, evidence, activity, and outcomes.",
+    },
+    {
+      title: "Next product steps",
+      body: "Expand role and company coverage, improve market source quality, add deeper interview banks, support institutional cohorts, and measure the relationship between roadmap completion and job outcomes.",
+    },
+  ]);
+  quotePanel(
+    doc,
+    "PROJECT SUMMARY",
+    "CareerPilot AI connects personal context, market reality, practical learning, and employer proof in one deployed career readiness workspace.",
+    { height: 78, size: 11, fill: COLOR.ink, stroke: COLOR.ink, labelColor: COLOR.accent, textColor: COLOR.white, font: "Helvetica-Bold" },
+  );
+  doc.y += 8;
+  ensureRoom(doc, 84);
+  const top = doc.y;
+  panel(doc, MARGIN, top, CONTENT_WIDTH, 64);
+  tracking(doc, "PROJECT LINKS", MARGIN + 14, top + 10, { size: 7 });
+  doc.font("Helvetica-Bold").fontSize(9.5).fillColor(COLOR.ink).text("Live demo", MARGIN + 14, top + 26, { lineBreak: false });
+  doc.font("Body").fontSize(9.5).fillColor(COLOR.muted).text(LIVE_URL, MARGIN + 110, top + 26, { lineBreak: false });
+  doc.font("Helvetica-Bold").fontSize(9.5).fillColor(COLOR.ink).text("Source code", MARGIN + 14, top + 42, { lineBreak: false });
+  doc.font("Body").fontSize(9.5).fillColor(COLOR.muted).text(REPO_URL, MARGIN + 110, top + 42, { lineBreak: false });
+  doc.y = top + 76;
+}
+
 /* ------------------------------------------------------------------ main */
 
 async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
+  fs.mkdirSync(path.dirname(PUBLIC_FILE), { recursive: true });
   const doc = new PDFDocument({
     size: "A4",
     bufferPages: true,
     margins: { top: TOP_Y, bottom: 72, left: MARGIN, right: MARGIN },
     info: {
-      Title: "CareerPilot AI — Supporting Documentation",
+      Title: "CareerPilot AI — Full Product Documentation",
       Author: "CareerPilot AI Team",
-      Subject: "Alibaba Cloud AI Hackathon Pakistan 2026 — project submission",
+      Subject: "Alibaba Cloud AI Hackathon Pakistan 2026 — full product, feature, and technical documentation",
       Keywords:
-        "CareerPilot AI, career readiness, hackathon, Alibaba Cloud, Pakistan, AI mentor, roadmap, recruiter audit, market reality, winning strategy",
+        "CareerPilot AI, product documentation, career readiness, hackathon, Alibaba Cloud, Pakistan, AI mentor, roadmap, recruiter audit, market reality, resume intelligence, diagnosis, architecture",
     },
   });
   registerDocumentFonts(doc);
@@ -919,14 +1420,20 @@ async function main() {
   section1(doc);
   section2(doc);
   section3(doc);
-  section4(doc);
-  section5(doc);
-  section6(doc);
-  section7(doc);
-  section8(doc);
-  section9(doc);
-  section10(doc);
-  section11(doc);
+  fullSection4(doc);
+  fullSection5(doc);
+  fullSection6(doc);
+  fullSection7(doc);
+  fullSection8(doc);
+  fullSection9(doc);
+  fullSection10(doc);
+  fullSection11(doc);
+  fullSection12(doc);
+  fullSection13(doc);
+  fullSection14(doc);
+  fullSection15(doc);
+  fullSection16(doc);
+  fullSection17(doc);
 
   // Running footers are stamped after all content so they never interfere
   // with in-flow text layout. The cover (page index 0) stays clean.
@@ -947,6 +1454,8 @@ async function main() {
 
   await fs.promises.copyFile(OUT_FILE, ROOT_FILE);
   console.log(`[ok] copied to ${path.relative(ROOT, ROOT_FILE)}`);
+  await fs.promises.copyFile(OUT_FILE, PUBLIC_FILE);
+  console.log(`[ok] copied to ${path.relative(ROOT, PUBLIC_FILE)}`);
 }
 
 main().catch((err) => {

@@ -68,7 +68,7 @@ export const invalidateMarketReality = createServerFn({ method: "POST" })
  *  fresh report is generated on the next visit. */
 export const updateTargetRole = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { targetRole: string }) => {
+  .validator((input: { targetRole: string }) => {
     const targetRole = String(input?.targetRole ?? "").trim();
     if (!targetRole) throw new Error("Please enter a target role.");
     if (targetRole.length > 120) throw new Error("Target role is too long — keep it under 120 characters.");

@@ -5,7 +5,7 @@ import { analyzeStoredResume } from "./resume.server";
 
 export const analyzeResume = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { resumeId: string }) => {
+  .validator((input: { resumeId: string }) => {
     const resumeId = String(input?.resumeId ?? "").trim();
     if (!/^[0-9a-f-]{36}$/i.test(resumeId)) throw new Error("Invalid resume reference.");
     return { resumeId };

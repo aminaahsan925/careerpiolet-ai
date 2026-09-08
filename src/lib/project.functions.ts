@@ -11,7 +11,7 @@ export const getProjects = createServerFn({ method: "GET" })
 
 export const saveProjectsFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
+  .validator(
     (input: {
       projects: {
         name: string;

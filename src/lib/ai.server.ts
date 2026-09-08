@@ -37,9 +37,9 @@ const PROVIDERS: Record<AiProvider, ProviderConfig> = {
   groq: {
     url: "https://api.groq.com/openai/v1/chat/completions",
     models: [
-      process.env["GROQ_MODEL"] || "llama-3.3-70b-versatile",
-      "llama-3.1-8b-instant",
-      "mixtral-8x7b-32768",
+      process.env["GROQ_MODEL"] || "qwen/qwen3.8-27b",
+      "qwen/qwen3.6-27b",
+      "openai/gpt-oss-20b",
     ].filter(Boolean),
     envKeys: ["GROQ_API_KEY"],
     extraHeaders: {},
@@ -49,9 +49,9 @@ const PROVIDERS: Record<AiProvider, ProviderConfig> = {
     // Google's OpenAI-compatible endpoint, so the same fetch body works.
     url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
     models: [
-      process.env["GEMINI_MODEL"] || "gemini-2.5-flash",
-      "gemini-2.0-flash",
-      "gemini-2.5-flash-lite",
+      process.env["GEMINI_MODEL"] || "gemini-3.6-flash",
+      "gemini-3.5-flash",
+      "gemini-3.1-flash-lite",
     ].filter(Boolean),
     envKeys: ["GEMINI_API_KEY", "GOOGLE_API_KEY"],
     extraHeaders: {},
@@ -60,7 +60,7 @@ const PROVIDERS: Record<AiProvider, ProviderConfig> = {
   openrouter: {
     url: "https://openrouter.ai/api/v1/chat/completions",
     models: [
-      process.env["OPENROUTER_MODEL"] || "google/gemini-2.0-flash-001",
+      process.env["OPENROUTER_MODEL"] || "openai/gpt-oss-20b",
       "meta-llama/llama-3.3-70b-instruct",
       "mistralai/mistral-7b-instruct:free",
       "deepseek/deepseek-chat",
