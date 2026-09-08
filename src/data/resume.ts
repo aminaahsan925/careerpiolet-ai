@@ -130,3 +130,17 @@ export function useUploadAndAnalyze() {
     },
   });
 }
+
+/** Re-runs the AI analysis on an already-uploaded resume (no re-upload needed). */
+export function useReanalyze() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (resumeId: string) =>
+      analyzeResume({ data: { resumeId } }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["latest-analysis"] });
+      queryClient.invalidateQueries({ queryKey: ["current-user"] });
+      queryClient.invalidateQueries({ queryKey: ["career-overview"] });
+    },
+  });
+}

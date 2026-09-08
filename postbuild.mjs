@@ -4,7 +4,7 @@
  *
  * Runs automatically after `vite build` via the buildCommand in vercel.json.
  */
-import { cpSync, existsSync, mkdirSync, readdirSync, statSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const FUNC_ROOT = ".vercel/output/functions";
@@ -52,6 +52,23 @@ for (const dir of funcDirs) {
   mkdirSync(join(dir, "node_modules"), { recursive: true });
   cpSync(tslibSrc, dest, { recursive: true });
   console.log(`[postbuild] Copied tslib → ${dest}`);
+
+  // Extend the function timeout so AI-heavy routes (diagnosis, resume,
+  // roadmap, recruiter, market, mentor) have enough time to complete.
+  // Vercel Hobby caps this at 60s; Pro supports up to 900s.
+  const vcConfigPath = join(dir, ".vc-config.json");
+  if (existsSync(vcConfigPath)) {
+    try {
+      const cfg = JSON.parse(readFileSync(vcConfigPath, "utf8"));
+      if (!cfg.maxDuration || cfg.maxDuration < 60) {
+        cfg.maxDuration = 60;
+        writeFileSync(vcConfigPath, JSON.stringify(cfg, null, 2));
+        console.log(`[postbuild] Patched maxDuration=60 → ${vcConfigPath}`);
+      }
+    } catch (err) {
+      console.warn(`[postbuild] Could not patch ${vcConfigPath}:`, err.message);
+    }
+  }
 }
 
 console.log(`[postbuild] Done. tslib copied to ${funcDirs.length} function(s).`);
