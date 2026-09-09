@@ -86,10 +86,21 @@ export class AiError extends Error {}
 
 /**
  * Execute AI chat with multi-provider and multi-model failover.
+ *
+ * An overall time budget (default 52 s) keeps the whole failover chain
+ * inside the serverless function limit (60 s on Vercel Hobby) so callers
+ * get a clean AiError instead of the platform killing the request mid-flight.
  */
 export async function groqChat(
   messages: ChatMsg[],
-  opts: { json?: boolean; maxTokens?: number; temperature?: number; timeoutMs?: number } = {},
+  opts: {
+    json?: boolean;
+    maxTokens?: number;
+    temperature?: number;
+    timeoutMs?: number;
+    /** Total budget for the entire provider/model chain, in ms. */
+    totalTimeoutMs?: number;
+  } = {},
 ): Promise<string> {
   const requested = (process.env["AI_PROVIDER"] ?? "groq").toLowerCase() as AiProvider;
   const allProviders: AiProvider[] = ["groq", "gemini", "openrouter"];
@@ -100,16 +111,26 @@ export async function groqChat(
   const errors: string[] = [];
   // Allow callers to override the per-model timeout (default 45 s).
   const perModelTimeout = opts.timeoutMs ?? 45_000;
+  const overallDeadline = Date.now() + (opts.totalTimeoutMs ?? 52_000);
+  let budgetExhausted = false;
 
   for (const providerName of providerOrder) {
+    if (budgetExhausted) break;
     const config = PROVIDERS[providerName];
     const apiKey = resolveApiKey(config);
     if (!apiKey) continue;
 
     for (const model of config.models) {
+      const remaining = overallDeadline - Date.now();
+      if (remaining <= 2_000) {
+        budgetExhausted = true;
+        errors.push("overall time budget exhausted before more retries");
+        break;
+      }
+      const modelTimeout = Math.min(perModelTimeout, remaining);
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), perModelTimeout);
+        const timeoutId = setTimeout(() => controller.abort(), modelTimeout);
 
         const res = await fetch(config.url, {
           method: "POST",
@@ -156,7 +177,7 @@ export async function groqChat(
   }
 
   throw new AiError(
-    `The AI service is currently unavailable. (${errors.join("; ") || "No active API keys found"})`,
+    `The AI service is currently unavailable. (${errors.join("; ") || "No active API keys found"}${budgetExhausted ? " — timed out" : ""})`,
   );
 }
 

@@ -12,14 +12,35 @@ export const Route = createFileRoute("/_authenticated")({
         throw redirect({ to: "/auth", search: { redirect: location.pathname, reset: undefined } });
       }
 
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("onboarding_completed, current_status")
         .eq("user_id", data.user.id)
         .maybeSingle();
 
-      const onboarded = profile?.onboarding_completed === true;
-      const phase1Done = profile?.current_status != null;
+      let onboarded = profile?.onboarding_completed === true;
+      let phase1Done = profile?.current_status != null;
+
+      // If the main query failed (pending Phase 1 migration or a transient
+      // Supabase error), retry with the guaranteed-present column only so a
+      // read failure never traps a signed-in user in an onboarding loop.
+      if (profileError) {
+        console.warn("[CareerPilot] Profile guard query failed, retrying basic fields:", profileError);
+        const { data: basic, error: basicError } = await supabase
+          .from("profiles")
+          .select("onboarding_completed")
+          .eq("user_id", data.user.id)
+          .maybeSingle();
+        if (basicError) {
+          // Both reads failed — fail open to the app. Pages render their own
+          // error states with retry actions, which is better than a loop.
+          console.warn("[CareerPilot] Basic profile query also failed, allowing through:", basicError);
+          return { user: data.user };
+        }
+        onboarded = basic?.onboarding_completed === true;
+        // current_status is unknown here; assume done rather than block.
+        phase1Done = true;
+      }
       const onOnboarding = location.pathname.startsWith("/onboarding");
 
       // Need onboarding if: never completed original onboarding, OR

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
 import {
+  AlertTriangle,
   BarChart3,
   Briefcase,
   Calendar,
@@ -13,6 +14,7 @@ import {
   MessageCircle,
   Mic,
   MoreVertical,
+  RefreshCw,
   Search,
   Send,
   Sparkles,
@@ -110,13 +112,19 @@ function CardEmpty({
 }
 
 function DashboardPage() {
-  const { data: user, isLoading } = useCurrentUser();
+  const {
+    data: user,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useCurrentUser();
   const { data: overview } = useCareerOverview();
   const { data: projects } = useProjects();
   const hasProjects = (projects?.length ?? 0) > 0;
   const hasResume = overview?.hasResume ?? false;
 
-  if (isLoading || !user) {
+  if (isLoading) {
     return (
       <AppLayout title="Loading" subtitle="Preparing your workspace">
         <div className="grid gap-4 md:grid-cols-4">
@@ -127,6 +135,35 @@ function DashboardPage() {
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           <Skeleton className="h-64" />
           <Skeleton className="h-64" />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  // The query failed (or returned no user) — show a recoverable error state
+  // instead of an endless skeleton.
+  if (isError || !user) {
+    return (
+      <AppLayout title="Dashboard" subtitle="">
+        <div className="card-surface mx-auto max-w-lg p-8 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-terracotta/10 text-terracotta">
+            <AlertTriangle className="h-6 w-6" />
+          </div>
+          <h2 className="mt-4 text-[17px] font-bold text-foreground">
+            Couldn&apos;t load your workspace
+          </h2>
+          <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+            {error instanceof Error
+              ? error.message
+              : "Something went wrong while loading your profile. This is usually temporary."}
+          </p>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-terracotta px-5 py-2.5 text-[13px] font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5"
+          >
+            <RefreshCw className="h-4 w-4" /> Try again
+          </button>
         </div>
       </AppLayout>
     );

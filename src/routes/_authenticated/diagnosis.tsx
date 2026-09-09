@@ -1045,6 +1045,34 @@ function DiagnosisPage() {
     );
   }
 
+  // The overview query failed — offer a retry instead of silently rendering
+  // the "no diagnosis" wizard (which hides the real problem).
+  if (overview.isError) {
+    return (
+      <AppLayout title="Career Diagnosis" subtitle="">
+        <div className="card-surface mx-auto max-w-lg p-8 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-terracotta/10 text-terracotta">
+            <AlertTriangle className="h-6 w-6" />
+          </div>
+          <h2 className="mt-4 text-[17px] font-bold text-foreground">
+            Couldn&apos;t load your diagnosis
+          </h2>
+          <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+            {overview.error instanceof Error
+              ? overview.error.message
+              : "Something went wrong while loading your career data. This is usually temporary."}
+          </p>
+          <Button
+            className="mt-5 rounded-xl bg-terracotta font-bold text-xs"
+            onClick={() => void overview.refetch()}
+          >
+            <RefreshCw className="mr-1.5 h-4 w-4" /> Try again
+          </Button>
+        </div>
+      </AppLayout>
+    );
+  }
+
   const data = overview.data;
   const hasDiagnosis = Boolean(data?.diagnosis?.companyDiagnosis);
 
