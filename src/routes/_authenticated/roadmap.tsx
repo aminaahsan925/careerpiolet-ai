@@ -691,6 +691,46 @@ function RoadmapPage() {
             </div>
           </div>
 
+          {/* Measurable impact: derived from completed work and assessment history. */}
+          <div className="card-surface p-5">
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-[14.5px] font-bold">Proof of progress</h3>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-terracotta">
+                Evidence
+              </span>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="rounded-lg bg-secondary p-3">
+                <p className="text-[10px] text-muted-foreground">Completion rate</p>
+                <p className="mt-1 text-lg font-bold">{progress?.completionRate ?? 0}%</p>
+              </div>
+              <div className="rounded-lg bg-secondary p-3">
+                <p className="text-[10px] text-muted-foreground">Avg. checkpoint</p>
+                <p className="mt-1 text-lg font-bold">
+                  {progress?.averageMcqScore != null ? `${progress.averageMcqScore}%` : "—"}
+                </p>
+              </div>
+              <div className="rounded-lg bg-secondary p-3">
+                <p className="text-[10px] text-muted-foreground">Learning time</p>
+                <p className="mt-1 text-lg font-bold">
+                  {progress?.estimatedMinutesCompleted
+                    ? `${Math.round(progress.estimatedMinutesCompleted / 60)}h`
+                    : "0h"}
+                </p>
+              </div>
+              <div className="rounded-lg bg-secondary p-3">
+                <p className="text-[10px] text-muted-foreground">Checkpoints</p>
+                <p className="mt-1 text-lg font-bold">
+                  {progress?.mcqsPassed ?? 0}/{progress?.mcqsAttempted ?? 0}
+                </p>
+              </div>
+            </div>
+            <p className="mt-3 text-[10.5px] leading-relaxed text-muted-foreground">
+              Based on completed roadmap days, estimated work time, checkpoint scores, and recorded
+              assessment attempts.
+            </p>
+          </div>
+
           {/* Next Action */}
           <div className="card-surface bg-ink p-5 text-white">
             <p className="text-[11px] uppercase tracking-[0.18em] text-terracotta">Next Action</p>

@@ -138,6 +138,10 @@ export type RoadmapProgress = {
   completedDays: number;
   currentLevel: string;
   mcqsPassed: number;
+  mcqsAttempted: number;
+  averageMcqScore: number | null;
+  estimatedMinutesCompleted: number;
+  completionRate: number;
 };
 
 /* ------------------------------------------------------------------ *
@@ -177,6 +181,7 @@ export function useLearningPaths() {
         throw error;
       }
     },
+    staleTime: 60_000,
   });
 }
 
@@ -237,6 +242,7 @@ export function useRoadmapProgress() {
         throw error;
       }
     },
+    staleTime: 30_000,
   });
 }
 

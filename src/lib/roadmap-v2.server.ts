@@ -341,9 +341,10 @@ export async function generateRoadmapV2(
       .filter(Boolean)
       .join("\n");
 
-    // 8. Call AI (roadmap generation is heavy — allow up to 60 s per model)
-    //    Retry once on failure before giving up.
-    const MAX_AI_ATTEMPTS = 2;
+    // 8. Call AI (roadmap generation is heavy). groqChat already fails over
+    // across configured providers/models, so retrying the entire chain here
+    // would duplicate the slowest part of the request.
+    const MAX_AI_ATTEMPTS = 1;
     let raw: string | null = null;
     let lastAiError: unknown = null;
 
@@ -363,10 +364,6 @@ export async function generateRoadmapV2(
           `[RoadmapV2] AI call attempt ${attempt}/${MAX_AI_ATTEMPTS} failed:`,
           err instanceof Error ? err.message : String(err),
         );
-        if (attempt < MAX_AI_ATTEMPTS) {
-          // Brief pause before retry to let transient issues clear
-          await new Promise((r) => setTimeout(r, 2000));
-        }
       }
     }
 
@@ -601,12 +598,20 @@ export async function generateRoadmapV2(
  * ------------------------------------------------------------------ */
 
 export async function getRoadmapProgress(userId: string) {
-  // Fetch all paths
-  const pathsRes = await db
-    .from("roadmap_learning_paths")
-    .select("id, level, completed, position")
-    .eq("user_id", userId)
-    .order("position");
+  // These reads are independent. Fetch them together so the roadmap sidebar
+  // does not wait for three sequential database round trips.
+  const [pathsRes, daysRes, scoreRes] = await Promise.all([
+    db
+      .from("roadmap_learning_paths")
+      .select("id, level, completed, position")
+      .eq("user_id", userId)
+      .order("position"),
+    db
+      .from("roadmap_daily_work")
+      .select("completed, mcq_passed, estimated_minutes")
+      .eq("user_id", userId),
+    db.from("roadmap_mcq_attempts").select("score").eq("user_id", userId),
+  ]);
 
   const paths = pathsRes.data ?? [];
   const totalPaths = paths.length;
@@ -618,24 +623,19 @@ export async function getRoadmapProgress(userId: string) {
     paths[paths.length - 1]?.level ??
     "beginner";
 
-  // Fetch all daily work for this user to count totals
-  const allDaysRes = await db
-    .from("roadmap_daily_work")
-    .select("id, completed")
-    .eq("user_id", userId);
-
-  const allDays = allDaysRes.data ?? [];
+  const allDays = daysRes.data ?? [];
+  const completedDaysData = allDays.filter((day: { completed: boolean }) => day.completed);
   const totalDays = allDays.length;
-  const completedDays = allDays.filter((d: { completed: boolean }) => d.completed).length;
-
-  // Count MCQs passed (days where mcq_passed = true)
-  const mcqPassedRes = await db
-    .from("roadmap_daily_work")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", userId)
-    .eq("mcq_passed", true);
-
-  const mcqsPassed = mcqPassedRes.count ?? 0;
+  const completedDays = completedDaysData.length;
+  const mcqsPassed = allDays.filter((day: { mcq_passed: boolean }) => day.mcq_passed).length;
+  const scores = (scoreRes.data ?? [])
+    .map((row: { score: number }) => Number(row.score))
+    .filter((score: number) => Number.isFinite(score));
+  const estimatedMinutesCompleted = completedDaysData.reduce(
+    (total: number, row: { estimated_minutes: number }) =>
+      total + (Number(row.estimated_minutes) || 0),
+    0,
+  );
 
   return {
     totalPaths,
@@ -644,6 +644,12 @@ export async function getRoadmapProgress(userId: string) {
     completedDays,
     currentLevel,
     mcqsPassed,
+    mcqsAttempted: scores.length,
+    averageMcqScore: scores.length
+      ? Math.round(scores.reduce((total, score) => total + score, 0) / scores.length)
+      : null,
+    estimatedMinutesCompleted,
+    completionRate: totalDays ? Math.round((completedDays / totalDays) * 100) : 0,
   };
 }
 
