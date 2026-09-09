@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Award,
+  ArrowRight,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -13,6 +14,7 @@ import {
   SearchCheck,
   Sparkles,
   Target,
+  XCircle,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -133,10 +135,17 @@ function QuestionCard({
 
 function McqCheckpoint({ questions }: { questions: InterviewMcq[] }) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [submitted, setSubmitted] = useState(false);
-  const score = questions.filter(
+  const orderedQuestions = [...questions].sort(
+    (a, b) => a.level - b.level || a.id.localeCompare(b.id),
+  );
+  const currentQuestion = orderedQuestions[currentIndex];
+  const selectedAnswer = currentQuestion ? answers[currentQuestion.id] : undefined;
+  const score = orderedQuestions.filter(
     (question) => answers[question.id] === question.correctOption,
   ).length;
+  const answeredCount = Object.keys(answers).length;
   const levels = [1, 2, 3, 4] as const;
   const levelLabels = {
     1: "Level 1 · Foundations",
@@ -164,101 +173,152 @@ function McqCheckpoint({ questions }: { questions: InterviewMcq[] }) {
           </span>
         )}
       </div>
-      <div className="mt-5 space-y-6">
-        {levels.map((level) => (
-          <section key={level}>
-            <div className="mb-2 flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-terracotta text-[11px] font-bold text-white">
-                {level}
-              </span>
-              <h4 className="text-[12px] font-bold uppercase tracking-[0.12em] text-terracotta">
-                {levelLabels[level]}
-              </h4>
-            </div>
-            <div className="space-y-3">
-              {questions
-                .filter((question) => question.level === level)
-                .map((question) => (
-                  <div key={question.id} className="rounded-xl border border-border p-4">
-                    <div className="flex items-start gap-2">
-                      <p className="flex-1 text-[13px] font-semibold leading-relaxed">
-                        {question.question}
-                      </p>
-                      <span className="rounded-full bg-secondary px-2 py-1 text-[10px] font-semibold text-muted-foreground">
-                        {question.difficulty}
-                      </span>
-                    </div>
-                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                      {question.options.map((option) => {
-                        const selected = answers[question.id] === option.id;
-                        const correct = submitted && option.id === question.correctOption;
-                        const incorrect = submitted && selected && !correct;
-                        return (
-                          <button
-                            key={option.id}
-                            type="button"
-                            disabled={submitted}
-                            onClick={() =>
-                              setAnswers((current) => ({ ...current, [question.id]: option.id }))
-                            }
-                            className={cn(
-                              "rounded-lg border px-3 py-2 text-left text-[11.5px] transition-colors",
-                              correct
-                                ? "border-emerald-500 bg-emerald-50 text-emerald-800"
-                                : incorrect
-                                  ? "border-rose-400 bg-rose-50 text-rose-800"
-                                  : selected
-                                    ? "border-terracotta bg-terracotta/10"
-                                    : "border-border text-muted-foreground hover:bg-muted/40",
-                            )}
-                          >
-                            <span className="mr-1 font-bold uppercase">{option.id}.</span>{" "}
-                            {option.text}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {submitted && (
-                      <div className="mt-3 flex items-start gap-2 rounded-lg bg-secondary p-3 text-[11px] leading-relaxed text-muted-foreground">
-                        <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-terracotta" />
-                        <span>
-                          <strong className="text-foreground">{question.hiringSignal}:</strong>{" "}
-                          {question.explanation}
-                        </span>
-                      </div>
+      {!submitted && currentQuestion ? (
+        <>
+          <div className="mt-5 grid grid-cols-4 gap-2">
+            {levels.map((level) => {
+              const active = currentQuestion.level === level;
+              const complete = orderedQuestions
+                .slice(0, currentIndex)
+                .some((question) => question.level === level);
+              return (
+                <div
+                  key={level}
+                  className={cn(
+                    "rounded-lg border px-2 py-2 text-center",
+                    active ? "border-terracotta bg-terracotta/10" : "border-border bg-secondary/40",
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "mx-auto flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold",
+                      active
+                        ? "bg-terracotta text-white"
+                        : complete
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-muted text-muted-foreground",
                     )}
+                  >
+                    {complete ? <Check className="h-3 w-3" /> : level}
                   </div>
-                ))}
+                  <p className="mt-1 hidden text-[9px] font-semibold uppercase tracking-wide text-muted-foreground sm:block">
+                    {levelLabels[level].replace(/^Level [1-4] Â· /, "")}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-5 rounded-2xl border border-border bg-background/60 p-4 sm:p-6">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-terracotta">
+                Question {currentIndex + 1} of {orderedQuestions.length}
+              </span>
+              <span className="rounded-full bg-secondary px-2.5 py-1 text-[10px] font-semibold text-muted-foreground">
+                {currentQuestion.difficulty}
+              </span>
             </div>
-          </section>
-        ))}
-      </div>
-      <div className="mt-5 flex flex-wrap items-center gap-3">
-        <Button
-          className="rounded-xl bg-terracotta text-xs text-primary-foreground hover:bg-terracotta/90"
-          disabled={Object.keys(answers).length !== questions.length || submitted}
-          onClick={() => setSubmitted(true)}
-        >
-          <Check className="mr-1.5 h-3.5 w-3.5" /> Submit checkpoint
-        </Button>
-        {submitted && (
+            <h4 className="mt-3 text-[15px] font-bold leading-relaxed">
+              {currentQuestion.question}
+            </h4>
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              {currentQuestion.options.map((option) => {
+                const selected = selectedAnswer === option.id;
+                const correct = selectedAnswer && option.id === currentQuestion.correctOption;
+                const incorrect = selectedAnswer && selected && !correct;
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    disabled={Boolean(selectedAnswer)}
+                    onClick={() =>
+                      setAnswers((current) => ({ ...current, [currentQuestion.id]: option.id }))
+                    }
+                    className={cn(
+                      "rounded-xl border px-3 py-3 text-left text-[11.5px] transition-colors",
+                      correct
+                        ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                        : incorrect
+                          ? "border-rose-400 bg-rose-50 text-rose-800"
+                          : selected
+                            ? "border-terracotta bg-terracotta/10"
+                            : "border-border text-muted-foreground hover:border-terracotta/60 hover:bg-muted/40",
+                    )}
+                  >
+                    <span className="mr-1 font-bold uppercase">{option.id}.</span> {option.text}
+                  </button>
+                );
+              })}
+            </div>
+            {selectedAnswer && (
+              <div
+                className={cn(
+                  "mt-4 rounded-xl border p-3 text-[11px] leading-relaxed",
+                  selectedAnswer === currentQuestion.correctOption
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                    : "border-rose-200 bg-rose-50 text-rose-900",
+                )}
+              >
+                <div className="flex items-start gap-2">
+                  {selectedAnswer === currentQuestion.correctOption ? (
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                  ) : (
+                    <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
+                  )}
+                  <div>
+                    <p className="font-bold">
+                      {selectedAnswer === currentQuestion.correctOption
+                        ? "Correct — strong hiring signal."
+                        : "Not quite — here is why."}
+                    </p>
+                    <p className="mt-1">{currentQuestion.explanation}</p>
+                    <p className="mt-2 font-semibold">
+                      What the interviewer is testing: {currentQuestion.hiringSignal}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="mt-5 flex justify-end">
+              <Button
+                className="rounded-xl bg-terracotta text-xs text-primary-foreground hover:bg-terracotta/90"
+                disabled={!selectedAnswer}
+                onClick={() =>
+                  currentIndex === orderedQuestions.length - 1
+                    ? setSubmitted(true)
+                    : setCurrentIndex((index) => index + 1)
+                }
+              >
+                {currentIndex === orderedQuestions.length - 1
+                  ? "Finish checkpoint"
+                  : "Next question"}
+                <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="mt-5 rounded-2xl border border-terracotta/20 bg-terracotta/5 p-5 text-center sm:p-8">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-terracotta/10 text-terracotta">
+            <CheckCircle2 className="h-6 w-6" />
+          </div>
+          <h4 className="mt-3 text-lg font-bold">Checkpoint complete</h4>
+          <p className="mt-1 text-sm text-muted-foreground">
+            You scored {score} out of {orderedQuestions.length}. Review each explanation, then try
+            again to strengthen weak areas.
+          </p>
           <Button
             variant="outline"
-            className="rounded-xl text-xs"
+            className="mt-5 rounded-xl text-xs"
             onClick={() => {
               setAnswers({});
+              setCurrentIndex(0);
               setSubmitted(false);
             }}
           >
             Try again
           </Button>
-        )}
-        {!submitted && Object.keys(answers).length !== questions.length && (
-          <span className="text-[11px] text-muted-foreground">
-            Answer every question to see the hiring rationale.
-          </span>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
