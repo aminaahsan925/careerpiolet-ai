@@ -55,20 +55,9 @@ const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
   },
 ];
 
-const GUEST_SCREENS: Record<string, "dashboard" | "diagnosis" | "market" | "flightplan" | "recruiter" | "mentor"> = {
-  "/dashboard": "dashboard",
-  "/diagnosis": "diagnosis",
-  "/market": "market",
-  "/flightplan": "flightplan",
-  "/recruiter": "recruiter",
-  "/mentor": "mentor",
-};
-
 export function AppSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const guestScreen = useRouterState({ select: (s) => s.location.search.screen });
   const { data: user } = useCurrentUser();
-  const isGuestDemo = pathname === "/guest";
 
   return (
     <div className="flex h-full w-[220px] shrink-0 flex-col bg-sidebar px-4 py-6 text-sidebar-foreground">
@@ -88,20 +77,14 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void }) {
             </p>
             <div className="space-y-0.5">
               {group.items.map(({ label, icon: Icon, to }) => {
-                const active = isGuestDemo ? GUEST_SCREENS[to] === guestScreen : pathname === to;
+                const active = pathname === to;
                 const className = cn(
                   "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[13.5px] font-medium transition-colors",
                   active
                     ? "bg-sidebar-primary text-sidebar-primary-foreground"
                     : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 );
-                const guestTarget = GUEST_SCREENS[to];
-                return isGuestDemo && guestTarget ? (
-                  <Link key={label} to="/guest" search={{ screen: guestTarget }} onClick={onNavigate} className={className}>
-                    <Icon className="h-[17px] w-[17px]" strokeWidth={1.7} />
-                    <span>{label}</span>
-                  </Link>
-                ) : (
+                return (
                   <Link key={label} to={to} onClick={onNavigate} className={className}>
                     <Icon className="h-[17px] w-[17px]" strokeWidth={1.7} />
                     <span>{label}</span>
@@ -114,7 +97,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="mt-4 flex items-center gap-3 rounded-xl border border-sidebar-border bg-card px-3 py-3">
-        {user?.avatar && !isGuestDemo ? (
+        {user?.avatar ? (
           <img
             src={user.avatar}
             alt={user.fullName || "User avatar"}
@@ -123,9 +106,7 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void }) {
           />
         ) : (
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-terracotta text-[12px] font-bold text-primary-foreground">
-            {isGuestDemo
-              ? "SA"
-              : user?.fullName
+            {user?.fullName
               ? user.fullName
                   .split(" ")
                   .map((n) => n[0])
@@ -136,8 +117,8 @@ export function AppSidebar({ onNavigate }: { onNavigate?: () => void }) {
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[13px] font-semibold text-foreground">{isGuestDemo ? "Sara Ahmed" : user?.fullName}</p>
-          <p className="truncate text-[11.5px] text-muted-foreground">{isGuestDemo ? "Demo Candidate" : user?.role}</p>
+          <p className="truncate text-[13px] font-semibold text-foreground">{user?.fullName}</p>
+          <p className="truncate text-[11.5px] text-muted-foreground">{user?.role}</p>
         </div>
         <ChevronDown className="h-4 w-4 text-muted-foreground" />
       </div>

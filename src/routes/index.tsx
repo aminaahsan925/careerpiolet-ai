@@ -166,21 +166,12 @@ function Landing() {
             Diagnosis
           </Link>
         </nav>
-        <div className="flex items-center gap-3">
-          <Link
-            to="/guest"
-            search={{ screen: "dashboard" }}
-            className="rounded-lg border border-border px-4 py-2.5 text-[13px] font-semibold text-foreground transition hover:bg-secondary"
-          >
-            View as Guest
-          </Link>
-          <Link
-            to="/dashboard"
-            className="rounded-lg bg-terracotta px-4 py-2.5 text-[13px] font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5 shadow-sm"
-          >
-            Open Dashboard
-          </Link>
-        </div>
+        <Link
+          to="/dashboard"
+          className="rounded-lg bg-terracotta px-4 py-2.5 text-[13px] font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5 shadow-sm"
+        >
+          Open Dashboard
+        </Link>
       </header>
 
       <main className="mx-auto max-w-6xl px-6">
