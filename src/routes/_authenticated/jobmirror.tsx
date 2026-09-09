@@ -2,10 +2,12 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   Award,
   Check,
+  CheckCircle2,
   ChevronDown,
   CircleHelp,
   ClipboardCheck,
   Clock3,
+  ListChecks,
   MessageSquareText,
   Mic2,
   SearchCheck,
@@ -19,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import {
   buildInterviewIntel,
   getInterviewCompanies,
+  type InterviewMcq,
   type InterviewQuestion,
 } from "@/data/interview-intel";
 import { useCurrentUser } from "@/data/user";
@@ -37,13 +40,15 @@ export const Route = createFileRoute("/_authenticated/jobmirror")({
   component: InterviewPrepPage,
 });
 
-type PrepTab = "overview" | "technical" | "system_design" | "behavioral" | "answer_lab";
+type PrepTab =
+  "overview" | "technical" | "system_design" | "behavioral" | "mcq_checkpoint" | "answer_lab";
 
 const TABS: Array<{ id: PrepTab; label: string }> = [
   { id: "overview", label: "Brief overview" },
   { id: "technical", label: "Technical" },
   { id: "system_design", label: "System design" },
   { id: "behavioral", label: "Behavioral" },
+  { id: "mcq_checkpoint", label: "MCQ checkpoint" },
   { id: "answer_lab", label: "Answer lab" },
 ];
 
@@ -126,11 +131,143 @@ function QuestionCard({
   );
 }
 
+function McqCheckpoint({ questions }: { questions: InterviewMcq[] }) {
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [submitted, setSubmitted] = useState(false);
+  const score = questions.filter(
+    (question) => answers[question.id] === question.correctOption,
+  ).length;
+  const levels = [1, 2, 3, 4] as const;
+  const levelLabels = {
+    1: "Level 1 · Foundations",
+    2: "Level 2 · Applied practice",
+    3: "Level 3 · Advanced judgement",
+    4: "Level 4 · Scenario panel",
+  } as const;
+
+  return (
+    <div className="card-surface p-5 sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2">
+            <ListChecks className="h-5 w-5 text-terracotta" />
+            <h3 className="text-[15px] font-bold">Progressive MCQ checkpoint</h3>
+          </div>
+          <p className="mt-1 max-w-2xl text-[12px] text-muted-foreground">
+            Start with role fundamentals, then work through employer-specific applied, advanced, and
+            production scenarios.
+          </p>
+        </div>
+        {submitted && (
+          <span className="rounded-full bg-terracotta/10 px-3 py-1.5 text-[11px] font-bold text-terracotta">
+            Score: {score}/{questions.length}
+          </span>
+        )}
+      </div>
+      <div className="mt-5 space-y-6">
+        {levels.map((level) => (
+          <section key={level}>
+            <div className="mb-2 flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-terracotta text-[11px] font-bold text-white">
+                {level}
+              </span>
+              <h4 className="text-[12px] font-bold uppercase tracking-[0.12em] text-terracotta">
+                {levelLabels[level]}
+              </h4>
+            </div>
+            <div className="space-y-3">
+              {questions
+                .filter((question) => question.level === level)
+                .map((question) => (
+                  <div key={question.id} className="rounded-xl border border-border p-4">
+                    <div className="flex items-start gap-2">
+                      <p className="flex-1 text-[13px] font-semibold leading-relaxed">
+                        {question.question}
+                      </p>
+                      <span className="rounded-full bg-secondary px-2 py-1 text-[10px] font-semibold text-muted-foreground">
+                        {question.difficulty}
+                      </span>
+                    </div>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {question.options.map((option) => {
+                        const selected = answers[question.id] === option.id;
+                        const correct = submitted && option.id === question.correctOption;
+                        const incorrect = submitted && selected && !correct;
+                        return (
+                          <button
+                            key={option.id}
+                            type="button"
+                            disabled={submitted}
+                            onClick={() =>
+                              setAnswers((current) => ({ ...current, [question.id]: option.id }))
+                            }
+                            className={cn(
+                              "rounded-lg border px-3 py-2 text-left text-[11.5px] transition-colors",
+                              correct
+                                ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                                : incorrect
+                                  ? "border-rose-400 bg-rose-50 text-rose-800"
+                                  : selected
+                                    ? "border-terracotta bg-terracotta/10"
+                                    : "border-border text-muted-foreground hover:bg-muted/40",
+                            )}
+                          >
+                            <span className="mr-1 font-bold uppercase">{option.id}.</span>{" "}
+                            {option.text}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {submitted && (
+                      <div className="mt-3 flex items-start gap-2 rounded-lg bg-secondary p-3 text-[11px] leading-relaxed text-muted-foreground">
+                        <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-terracotta" />
+                        <span>
+                          <strong className="text-foreground">{question.hiringSignal}:</strong>{" "}
+                          {question.explanation}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+          </section>
+        ))}
+      </div>
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        <Button
+          className="rounded-xl bg-terracotta text-xs text-primary-foreground hover:bg-terracotta/90"
+          disabled={Object.keys(answers).length !== questions.length || submitted}
+          onClick={() => setSubmitted(true)}
+        >
+          <Check className="mr-1.5 h-3.5 w-3.5" /> Submit checkpoint
+        </Button>
+        {submitted && (
+          <Button
+            variant="outline"
+            className="rounded-xl text-xs"
+            onClick={() => {
+              setAnswers({});
+              setSubmitted(false);
+            }}
+          >
+            Try again
+          </Button>
+        )}
+        {!submitted && Object.keys(answers).length !== questions.length && (
+          <span className="text-[11px] text-muted-foreground">
+            Answer every question to see the hiring rationale.
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function InterviewPrepPage() {
   const navigate = useNavigate();
   const { data: user } = useCurrentUser();
   const companies = getInterviewCompanies();
-  const defaultCompany = user?.applications?.[0]?.company || companies[0]?.name || "Target company";
+  const defaultCompany = user?.applications?.[0]?.company || "";
   const [company, setCompany] = useState(defaultCompany);
   const [customCompany, setCustomCompany] = useState("");
   const [activeTab, setActiveTab] = useState<PrepTab>("overview");
@@ -138,8 +275,7 @@ function InterviewPrepPage() {
   const [answer, setAnswer] = useState("");
   const [checklist, setChecklist] = useState<string[]>([]);
   const targetRole = user?.goal || user?.role || "Technology role";
-  const selectedCompany =
-    company === "__custom__" ? customCompany.trim() || "Your company" : company;
+  const selectedCompany = company === "__custom__" ? customCompany.trim() : company.trim();
   const intel = buildInterviewIntel(targetRole, selectedCompany);
   const firstQuestion = intel.questions[0];
 
@@ -208,6 +344,9 @@ function InterviewPrepPage() {
                 onChange={(event) => setCompany(event.target.value)}
                 className="w-full max-w-full rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-[12px] text-white outline-none sm:w-auto"
               >
+                <option value="" className="text-foreground">
+                  General industry (no company)
+                </option>
                 <option value="__custom__" className="text-foreground">
                   Add my own company
                 </option>
@@ -273,8 +412,8 @@ function InterviewPrepPage() {
               {
                 icon: ClipboardCheck,
                 label: "Question bank",
-                value: `${intel.questions.length} prompts`,
-                note: "Practice with evidence",
+                value: `${intel.questions.length} prompts + ${intel.mcqs.length} MCQs`,
+                note: "Practice with evidence and hiring-bar checkpoints",
               },
             ].map(({ icon: Icon, label, value, note }) => (
               <div key={label} className="card-surface flex items-start gap-3 p-5">
@@ -295,7 +434,9 @@ function InterviewPrepPage() {
 
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-4">
-            {activeTab === "answer_lab" ? (
+            {activeTab === "mcq_checkpoint" ? (
+              <McqCheckpoint key={`${intel.role}:${intel.company}`} questions={intel.mcqs} />
+            ) : activeTab === "answer_lab" ? (
               <div className="card-surface p-5 sm:p-6">
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-terracotta/10 text-terracotta">

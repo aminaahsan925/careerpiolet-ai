@@ -9,6 +9,17 @@ export type InterviewQuestion = {
   companySignal: string;
 };
 
+export type InterviewMcq = {
+  id: string;
+  level: 1 | 2 | 3 | 4;
+  difficulty: "Foundation" | "Applied" | "Advanced" | "Scenario";
+  question: string;
+  options: Array<{ id: "a" | "b" | "c" | "d"; text: string }>;
+  correctOption: "a" | "b" | "c" | "d";
+  explanation: string;
+  hiringSignal: string;
+};
+
 export type InterviewIntel = {
   role: string;
   company: string;
@@ -16,6 +27,7 @@ export type InterviewIntel = {
   stages: string[];
   focusAreas: string[];
   questions: InterviewQuestion[];
+  mcqs: InterviewMcq[];
   note: string;
 };
 
@@ -382,26 +394,203 @@ export function buildInterviewIntel(
   companyName?: string | null,
 ): InterviewIntel {
   const roleProfile: RoleTruthProfile = resolveRoleProfile(targetRole || "Technology role");
-  const company = matchCompanyTruth(companyName);
+  const hasCompany = Boolean(companyName?.trim());
+  const company = hasCompany ? matchCompanyTruth(companyName) : null;
+  const isGroundedCompany = Boolean(
+    company && FEATURED_COMPANIES.some((item) => item.id === company.id),
+  );
   const questions = (ROLE_QUESTIONS[roleProfile.roleId] ?? GENERIC_QUESTIONS).map((question) => ({
     ...question,
-    companySignal: question.companySignal.replace(
-      "Every employer",
-      `${company.name} and most employers`,
-    ),
+    companySignal: company
+      ? question.companySignal.replace("Every employer", `${company.name} and most employers`)
+      : question.companySignal,
   }));
+
+  const roleSkill = roleProfile.mustHaveSkills[0]?.skill ?? "the core skills for this role";
+  const companySkill = company?.hiringBar.nonNegotiables[0]?.skill ?? roleSkill;
+  const stack =
+    company?.primaryStack[0] ?? roleProfile.commonTools[0]?.skill ?? "the role's main stack";
+  const proof = company?.projectExpectation.mustHaveFeatures[0] ?? "a tested, deployed project";
+  const companyLabel = company?.name ?? "the target industry";
+  const mcqs: InterviewMcq[] = [
+    {
+      id: "foundation-role-signal",
+      level: 1,
+      difficulty: "Foundation",
+      question: `For an entry-level ${roleProfile.displayName} screen, which preparation best demonstrates ${roleSkill}?`,
+      options: [
+        { id: "a", text: "List the skill in a resume skills section only." },
+        {
+          id: "b",
+          text: `Build a small ${roleProfile.displayName} feature and explain the design decisions.`,
+        },
+        { id: "c", text: "Memorise framework definitions without writing code." },
+        { id: "d", text: "Collect certificates without a working example." },
+      ],
+      correctOption: "b",
+      explanation:
+        "Entry-level screens reward a concrete implementation and the ability to explain it, not an unverified claim.",
+      hiringSignal: `${roleProfile.displayName} fundamentals`,
+    },
+    {
+      id: "foundation-company-bar",
+      level: 1,
+      difficulty: "Foundation",
+      question: `${companyLabel} screens for ${companySkill}. Which answer is the strongest first signal?`,
+      options: [
+        { id: "a", text: `A working example that proves ${companySkill}, with tests or evidence.` },
+        { id: "b", text: "A long list of unrelated tools." },
+        { id: "c", text: "A copied tutorial with no explanation." },
+        { id: "d", text: "A claim that the skill is easy to learn later." },
+      ],
+      correctOption: "a",
+      explanation: `The hiring bar is based on demonstrated evidence for ${companySkill}, not a keyword-only claim.`,
+      hiringSignal: `${companyLabel} screening bar`,
+    },
+    {
+      id: "applied-stack-debugging",
+      level: 2,
+      difficulty: "Applied",
+      question: `A ${roleProfile.displayName} feature using ${stack} works locally but fails for real users. What should you do first?`,
+      options: [
+        { id: "a", text: "Rewrite the whole feature in another framework." },
+        { id: "b", text: "Add more libraries before observing the failure." },
+        {
+          id: "c",
+          text: "Reproduce it, inspect logs and inputs, then isolate the failing boundary.",
+        },
+        { id: "d", text: "Hide the error and ask the user to retry indefinitely." },
+      ],
+      correctOption: "c",
+      explanation:
+        "A production-minded candidate gathers evidence first, isolates the boundary, and then makes the smallest safe fix.",
+      hiringSignal: `${stack} debugging discipline`,
+    },
+    {
+      id: "applied-proof",
+      level: 2,
+      difficulty: "Applied",
+      question: `Which project deliverable would best satisfy ${companyLabel}'s requirement for ${proof}?`,
+      options: [
+        { id: "a", text: "A screenshot of an unfinished local app." },
+        {
+          id: "b",
+          text: "A deployed link plus a readable repository and a short verification note.",
+        },
+        { id: "c", text: "A private repository with no setup instructions." },
+        { id: "d", text: "A slide listing planned features." },
+      ],
+      correctOption: "b",
+      explanation:
+        "A recruiter can verify a deployed result, inspect the implementation, and understand how to run it.",
+      hiringSignal: "Employer-verifiable proof",
+    },
+    {
+      id: "advanced-tradeoff",
+      level: 3,
+      difficulty: "Advanced",
+      question: `You must ship a ${roleProfile.displayName} feature by Friday. Which trade-off best matches ${companyLabel}'s hiring bar?`,
+      options: [
+        { id: "a", text: "Ship the happy path with no validation or tests." },
+        {
+          id: "b",
+          text: "Cut scope, keep the critical path tested, document the risk, and measure the result.",
+        },
+        { id: "c", text: "Delay all feedback until every possible feature is complete." },
+        { id: "d", text: "Copy a similar product without checking its constraints." },
+      ],
+      correctOption: "b",
+      explanation:
+        "The best answer shows prioritisation, quality protection, explicit risk, and measurable delivery.",
+      hiringSignal: "Engineering judgement under constraints",
+    },
+    {
+      id: "advanced-architecture",
+      level: 3,
+      difficulty: "Advanced",
+      question: `A ${roleProfile.displayName} service has rising latency after adoption grows. Which investigation is most defensible?`,
+      options: [
+        {
+          id: "a",
+          text: "Measure the request path, inspect database/query or render costs, then change the measured bottleneck.",
+        },
+        { id: "b", text: "Increase every server size without collecting a baseline." },
+        { id: "c", text: "Remove error handling to reduce code paths." },
+        { id: "d", text: "Add caching everywhere without checking stale-data risk." },
+      ],
+      correctOption: "a",
+      explanation:
+        "Strong candidates connect architecture decisions to measured bottlenecks and the feature's correctness constraints.",
+      hiringSignal: "Performance and architecture reasoning",
+    },
+    {
+      id: "scenario-panel",
+      level: 4,
+      difficulty: "Scenario",
+      question: `During ${companyLabel}'s technical panel, a release of your ${roleProfile.displayName} project causes errors. What is the best response?`,
+      options: [
+        { id: "a", text: "Blame the deployment platform and continue presenting." },
+        {
+          id: "b",
+          text: "Rollback or mitigate safely, state what you know, preserve evidence, and explain the follow-up fix.",
+        },
+        { id: "c", text: "Delete the failing feature so the dashboard looks normal." },
+        { id: "d", text: "Ignore it because interview code does not need operations." },
+      ],
+      correctOption: "b",
+      explanation:
+        "The response demonstrates ownership, incident judgement, communication, and operational maturity.",
+      hiringSignal: "Production ownership",
+    },
+    {
+      id: "scenario-decision",
+      level: 4,
+      difficulty: "Scenario",
+      question: `Which final answer would most convince ${companyLabel} that your ${roleProfile.displayName} project is ready for users?`,
+      options: [
+        { id: "a", text: "It uses many popular technologies." },
+        { id: "b", text: "It looks good in a screenshot." },
+        {
+          id: "c",
+          text: "It has a verified workflow, tests, deployment evidence, and a measured outcome.",
+        },
+        { id: "d", text: "It was generated quickly with no tracked decisions." },
+      ],
+      correctOption: "c",
+      explanation:
+        "A hiring panel can trust a project when the candidate can show the workflow, quality controls, deployment, and outcome.",
+      hiringSignal: "End-to-end proof and impact",
+    },
+  ];
 
   return {
     role: roleProfile.displayName,
-    company: company.name,
-    companyTagline: company.tagline,
-    stages: company.hiringBar.evaluationStages,
-    focusAreas: [
-      ...company.interviewPreparation.dsaFocus.slice(0, 2),
-      ...company.interviewPreparation.coreTheory.slice(0, 3),
-      ...company.interviewPreparation.behavioralKeys.slice(0, 2),
+    company: company?.name ?? "General industry",
+    companyTagline:
+      company?.tagline ??
+      `General hiring standards and best practices for ${roleProfile.displayName} interviews.`,
+    stages: company?.hiringBar.evaluationStages ?? [
+      "1. Role fundamentals and problem solving",
+      "2. Technical and system design discussion",
+      "3. Behavioral and project evidence review",
     ],
+    focusAreas: company
+      ? [
+          ...company.interviewPreparation.dsaFocus.slice(0, 2),
+          ...company.interviewPreparation.coreTheory.slice(0, 3),
+          ...company.interviewPreparation.behavioralKeys.slice(0, 2),
+        ]
+      : [
+          ...roleProfile.mustHaveSkills.slice(0, 3).map((skill) => skill.skill),
+          ...roleProfile.commonTools.slice(0, 2).map((skill) => skill.skill),
+        ],
     questions,
-    note: "These are evidence-backed practice prompts synthesized from the role and employer hiring standards in CareerPilot's research dataset, not leaked interview questions.",
+    mcqs,
+    note:
+      company && isGroundedCompany
+        ? `These MCQs are grounded in ${company.name}'s recorded hiring bar and ${roleProfile.displayName} requirements, not leaked interview questions.`
+        : company
+          ? `These MCQs use general employer best practices for ${roleProfile.displayName} and the custom company context “${company.name}”; verify them against the employer's job description.`
+          : `These MCQs use general industry best practices for ${roleProfile.displayName}; select a company for employer-specific standards.`,
   };
 }

@@ -646,7 +646,9 @@ export async function getRoadmapProgress(userId: string) {
     mcqsPassed,
     mcqsAttempted: scores.length,
     averageMcqScore: scores.length
-      ? Math.round(scores.reduce((total, score) => total + score, 0) / scores.length)
+      ? Math.round(
+          scores.reduce((total: number, score: number) => total + score, 0) / scores.length,
+        )
       : null,
     estimatedMinutesCompleted,
     completionRate: totalDays ? Math.round((completedDays / totalDays) * 100) : 0,
