@@ -1,0 +1,117 @@
+import { INITIAL_TECH_EVENTS, type TechEvent } from "@/data/tech-events";
+import { groqChat, parseJsonObject } from "./ai.server";
+import { tavilySearch } from "./tavily.server";
+
+type EventDraft = {
+  city?: string;
+  title?: string;
+  eventType?: TechEvent["eventType"];
+  organizer?: string;
+  venue?: string;
+  eventDate?: string;
+  eventUrl?: string;
+  description?: string;
+  tags?: string[];
+  prizePool?: string;
+};
+
+const EVENT_TYPES = new Set<TechEvent["eventType"]>([
+  "hackathon",
+  "workshop",
+  "conference",
+  "meetup",
+]);
+
+function fallbackEvents(city: string): TechEvent[] {
+  return INITIAL_TECH_EVENTS.filter(
+    (event) =>
+      city === "All Cities" ||
+      event.city.toLowerCase().includes(city.toLowerCase()) ||
+      city.toLowerCase().includes(event.city.toLowerCase()),
+  );
+}
+
+function normalizeEvents(city: string, drafts: EventDraft[]): TechEvent[] {
+  return drafts
+    .map((draft, index) => {
+      const title = draft.title?.trim();
+      const eventUrl = draft.eventUrl?.trim();
+      const eventDate = draft.eventDate?.trim();
+      if (!title || !eventUrl || !/^https?:\/\//i.test(eventUrl) || !eventDate) return null;
+
+      const eventType = EVENT_TYPES.has(draft.eventType ?? "meetup")
+        ? draft.eventType!
+        : "meetup";
+      const eventCity = draft.city?.trim() || city;
+      const tags = Array.isArray(draft.tags)
+        ? draft.tags.map((tag) => String(tag).trim()).filter(Boolean).slice(0, 6)
+        : [];
+
+      const event: TechEvent = {
+        id: `live-${city.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${index}`,
+        city: eventCity,
+        title,
+        eventType,
+        organizer: draft.organizer?.trim() || "Organizer not listed",
+        venue: draft.venue?.trim() || "See event page",
+        eventDate,
+        eventUrl,
+        description: draft.description?.trim() || "See the official event page for details.",
+        tags,
+        ...(draft.prizePool?.trim() ? { prizePool: draft.prizePool.trim() } : {}),
+        isVerified: true,
+        registrationOpen: true,
+        isAiGrounded: true,
+      };
+      return event;
+    })
+    .filter((event): event is TechEvent => Boolean(event));
+}
+
+/** Search the live web on the server, then use the configured AI failover chain
+ * (Groq -> Gemini -> OpenRouter) to turn search evidence into safe event cards. */
+export async function getLiveTechEvents(city: string, targetRole?: string): Promise<TechEvent[]> {
+  const cleanCity = city.trim() || "Lahore";
+  const query = [
+    `upcoming developer hackathons conferences workshops meetups in ${cleanCity}, Pakistan`,
+    "official registration 2026 2027",
+    targetRole ? `relevant to ${targetRole}` : "students and early-career developers",
+  ].join(" ");
+
+  try {
+    const search = await tavilySearch(query, { maxResults: 8, searchDepth: "advanced" });
+    if (!search.results.length) return fallbackEvents(cleanCity);
+
+    const evidence = search.results
+      .map(
+        (result, index) =>
+          `[${index + 1}] ${result.title}\nURL: ${result.url}\nPublished: ${result.publishedDate ?? "unknown"}\n${result.content.slice(0, 1800)}`,
+      )
+      .join("\n\n");
+
+    const raw = await groqChat(
+      [
+        {
+          role: "system",
+          content:
+            "You extract only real events from web evidence. Never invent dates, URLs, organizers, or venues. Return JSON only in the shape {\"events\":[]}. Include an event only when the evidence contains a plausible official page URL and date.",
+        },
+        {
+          role: "user",
+          content: `Find upcoming tech events for ${cleanCity}, Pakistan from this evidence. Return at most 8 events with keys city, title, eventType, organizer, venue, eventDate (YYYY-MM-DD), eventUrl, description, tags, prizePool.\n\n${evidence}`,
+        },
+      ],
+      { json: true, maxTokens: 2200, temperature: 0.1, totalTimeoutMs: 28_000 },
+    );
+
+    const parsed = parseJsonObject<{ events?: EventDraft[] }>(raw);
+    const events = normalizeEvents(cleanCity, parsed.events ?? []);
+    return events.length ? events : fallbackEvents(cleanCity);
+  } catch (error) {
+    console.warn("[TechEvents] live search failed; using cached events", {
+      city: cleanCity,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return fallbackEvents(cleanCity);
+  }
+}

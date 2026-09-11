@@ -34,7 +34,7 @@ function TechEventsPage() {
     >
       <div className="space-y-6 pb-12">
         <TechEventsSection
-          userCity={user?.targetCity || "Lahore"}
+          userCity="Lahore"
           targetRole={user?.role || "Software Engineer"}
         />
       </div>

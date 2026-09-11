@@ -216,63 +216,6 @@ export const CITIES = [
   'Remote / Virtual',
 ];
 
-const GEMINI_API_KEY = process.env?.GEMINI_API_KEY;
-
-// Dynamic Search Grounding Fetcher
-export async function fetchLiveGroundedEvents(city: string): Promise<TechEvent[]> {
-  const cachedEvents = INITIAL_TECH_EVENTS.filter(
-    (e) => city === 'All Cities' || e.city.toLowerCase().includes(city.toLowerCase()) || city.toLowerCase().includes(e.city.toLowerCase())
-  );
-
-  // If Gemini API is available, query live search grounding
-  if (GEMINI_API_KEY) {
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  {
-                    text: `Search for real upcoming developer hackathons, tech conferences, student workshops, and coding meetups happening in ${city}, Pakistan for late 2026. Return a strict JSON array of objects with keys: id, city, title, eventType (hackathon|workshop|conference|meetup), organizer, venue, eventDate (YYYY-MM-DD), eventUrl, description, tags (array of strings), prizePool (string or optional). Only output JSON.`,
-                  },
-                ],
-              },
-            ],
-            generationConfig: {
-              responseMimeType: 'application/json',
-            },
-          }),
-        }
-      );
-
-      if (response.ok) {
-        const json = await response.json();
-        const candidateText = json.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (candidateText) {
-          const parsed = JSON.parse(candidateText) as TechEvent[];
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            return parsed.map((e, idx) => ({
-              ...e,
-              id: e.id || `grounded-${city}-${idx}`,
-              isVerified: true,
-              registrationOpen: true,
-              isAiGrounded: true,
-            }));
-          }
-        }
-      }
-    } catch (err) {
-      console.warn('[Gemini Search Grounding] Fallback to verified records:', err);
-    }
-  }
-
-  return cachedEvents;
-}
-
 // Helper to calculate days until event
 export function getDaysUntil(dateString: string): number {
   try {

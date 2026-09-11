@@ -26,10 +26,10 @@ import { Input } from '@/components/ui/input';
 import {
   CITIES,
   INITIAL_TECH_EVENTS,
-  fetchLiveGroundedEvents,
   getDaysUntil,
   type TechEvent,
 } from '@/data/tech-events';
+import { getLiveTechEvents } from '@/lib/tech-events.functions';
 import {
   getPinnedEvents,
   togglePinEvent,
@@ -50,7 +50,7 @@ const EVENT_TYPE_FILTERS = [
   { id: 'meetup', label: 'Meetups', icon: Zap, badge: '🤝' },
 ];
 
-export function TechEventsSection({ userCity = 'Lahore' }: TechEventsSectionProps) {
+export function TechEventsSection({ userCity = 'Lahore', targetRole }: TechEventsSectionProps) {
   const [selectedCity, setSelectedCity] = useState(userCity || 'Lahore');
   const [selectedType, setSelectedType] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -84,7 +84,9 @@ export function TechEventsSection({ userCity = 'Lahore' }: TechEventsSectionProp
   const handleRefresh = async () => {
     setIsRefreshing(true);
     try {
-      const live = await fetchLiveGroundedEvents(selectedCity);
+      const live = await getLiveTechEvents({
+        data: { city: selectedCity, ...(targetRole ? { targetRole } : {}) },
+      });
       setEventsList(live);
       toast.success(`Events refreshed for ${selectedCity}!`);
     } catch {

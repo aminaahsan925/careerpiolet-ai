@@ -49,7 +49,7 @@ const PROVIDERS: Record<AiProvider, ProviderConfig> = {
     // Google's OpenAI-compatible endpoint, so the same fetch body works.
     url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
     models: [
-      process.env["GEMINI_MODEL"] || "gemini-3.6-flash",
+      process.env["GEMINI_MODEL"] || "gemini-3-flash-preview",
       "gemini-3.5-flash",
       "gemini-3.1-flash-lite",
     ].filter(Boolean),

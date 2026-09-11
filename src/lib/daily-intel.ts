@@ -52,7 +52,7 @@ export function synthesizeDailyIntel(city: string = 'Lahore', targetRole: string
   return {
     title,
     summary: summary || 'Your daily career roadmap milestones and market realities are updated.',
-    eventHighlight: nextEvent ? `${nextEvent.title} (${nextEvent.eventDate})` : undefined,
+    ...(nextEvent ? { eventHighlight: `${nextEvent.title} (${nextEvent.eventDate})` } : {}),
     roadmapHighlight: roadmapTask,
     futureTechHighlight: futureTech,
     marketTruthHighlight: marketTruth,
