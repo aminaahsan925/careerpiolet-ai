@@ -10,9 +10,11 @@ type EventDraft = {
   venue?: string;
   eventDate?: string;
   eventUrl?: string;
+  registrationUrl?: string;
   description?: string;
   tags?: string[];
   prizePool?: string;
+  preparationTips?: string[];
 };
 
 const EVENT_TYPES = new Set<TechEvent["eventType"]>([
@@ -36,8 +38,16 @@ function normalizeEvents(city: string, drafts: EventDraft[]): TechEvent[] {
     .map((draft, index) => {
       const title = draft.title?.trim();
       const eventUrl = draft.eventUrl?.trim();
+      const registrationUrl = draft.registrationUrl?.trim() || eventUrl;
       const eventDate = draft.eventDate?.trim();
-      if (!title || !eventUrl || !/^https?:\/\//i.test(eventUrl) || !eventDate) return null;
+      if (
+        !title ||
+        !eventUrl ||
+        !registrationUrl ||
+        !/^https?:\/\//i.test(eventUrl) ||
+        !/^https?:\/\//i.test(registrationUrl) ||
+        !eventDate
+      ) return null;
 
       const eventType = EVENT_TYPES.has(draft.eventType ?? "meetup")
         ? draft.eventType!
@@ -56,8 +66,12 @@ function normalizeEvents(city: string, drafts: EventDraft[]): TechEvent[] {
         venue: draft.venue?.trim() || "See event page",
         eventDate,
         eventUrl,
+        registrationUrl,
         description: draft.description?.trim() || "See the official event page for details.",
         tags,
+        preparationTips: Array.isArray(draft.preparationTips)
+          ? draft.preparationTips.map((tip) => String(tip).trim()).filter(Boolean).slice(0, 4)
+          : [],
         ...(draft.prizePool?.trim() ? { prizePool: draft.prizePool.trim() } : {}),
         isVerified: true,
         registrationOpen: true,
@@ -98,7 +112,7 @@ export async function getLiveTechEvents(city: string, targetRole?: string): Prom
         },
         {
           role: "user",
-          content: `Find upcoming tech events for ${cleanCity}, Pakistan from this evidence. Return at most 8 events with keys city, title, eventType, organizer, venue, eventDate (YYYY-MM-DD), eventUrl, description, tags, prizePool.\n\n${evidence}`,
+          content: `Find upcoming tech events for ${cleanCity}, Pakistan from this evidence. Return at most 8 events with keys city, title, eventType, organizer, venue, eventDate (YYYY-MM-DD), eventUrl, registrationUrl, description, tags, prizePool, preparationTips. For preparationTips, give 3 concise, event-specific actions based on the event format, title, tags, and description. Do not give generic advice that ignores the event.\n\n${evidence}`,
         },
       ],
       { json: true, maxTokens: 2200, temperature: 0.1, totalTimeoutMs: 28_000 },

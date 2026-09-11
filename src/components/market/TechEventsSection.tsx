@@ -50,6 +50,30 @@ const EVENT_TYPE_FILTERS = [
   { id: 'meetup', label: 'Meetups', icon: Zap, badge: '🤝' },
 ];
 
+function preparationTipsFor(event: TechEvent): string[] {
+  if (event.preparationTips?.length) return event.preparationTips;
+  const focus = event.tags.slice(0, 2).join(' and ') || 'the event topics';
+  if (event.eventType === 'hackathon') {
+    return [
+      `Read the rules and judging criteria, then choose a small ${focus} idea.`,
+      'Prepare a short pitch, demo path, and a backup plan for the final presentation.',
+      'Set up your repository, starter stack, and team roles before the event begins.',
+    ];
+  }
+  if (event.eventType === 'workshop') {
+    return [
+      `Review the basics behind ${focus} before attending.`,
+      'Bring a working laptop and recreate the speaker’s setup in a small practice project.',
+      'Write down one question and one follow-up experiment to complete afterward.',
+    ];
+  }
+  return [
+    `Scan the agenda and pick one session connected to ${focus}.`,
+    'Prepare a one-sentence introduction and two thoughtful questions.',
+    'Save the speakers, projects, and follow-up resources you want to explore.',
+  ];
+}
+
 export function TechEventsSection({ userCity = 'Lahore', targetRole }: TechEventsSectionProps) {
   const [selectedCity, setSelectedCity] = useState(userCity || 'Lahore');
   const [selectedType, setSelectedType] = useState('all');
@@ -348,6 +372,19 @@ export function TechEventsSection({ userCity = 'Lahore', targetRole }: TechEvent
                       </span>
                     ))}
                   </div>
+
+                  <details className="rounded-2xl border border-terracotta/15 bg-terracotta/[0.03] px-3 py-2.5">
+                    <summary className="cursor-pointer list-none text-xs font-semibold text-terracotta">
+                      How to prepare for this {event.eventType}
+                    </summary>
+                    <ul className="mt-2 space-y-1.5 pl-4 text-[11px] leading-relaxed text-muted-foreground">
+                      {preparationTipsFor(event).map((tip) => (
+                        <li key={tip} className="list-disc">
+                          {tip}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
                 </div>
 
                 {/* Actions */}
@@ -385,13 +422,22 @@ export function TechEventsSection({ userCity = 'Lahore', targetRole }: TechEvent
                   </Button>
 
                   <a
-                    href={event.eventUrl}
+                    href={event.registrationUrl || event.eventUrl}
                     target="_blank"
                     rel="noreferrer"
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-colors hover:border-terracotta/40 hover:text-terracotta"
-                    title="Open Registration Link"
+                    title="Open registration link"
+                    aria-label={`Register for ${event.title}`}
                   >
                     <ExternalLink className="h-4 w-4" />
+                  </a>
+                  <a
+                    href={event.registrationUrl || event.eventUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl bg-terracotta px-3 text-xs font-semibold text-white transition-colors hover:bg-terracotta/90"
+                  >
+                    Register <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 </div>
               </motion.div>

@@ -10,8 +10,10 @@ export interface TechEvent {
   eventDate: string; // YYYY-MM-DD or readable string
   daysUntil?: number;
   eventUrl: string;
+  registrationUrl?: string;
   description: string;
   tags: string[];
+  preparationTips?: string[];
   isVerified: boolean;
   registrationOpen: boolean;
   prizePool?: string;
