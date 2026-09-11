@@ -401,13 +401,13 @@ export function TechEventsSection({ userCity = 'Lahore', targetRole }: TechEvent
                     )}
                   >
                     {isPinned ? (
-                      <>
+                      <span className="inline-flex items-center">
                         <Check className="mr-1.5 h-3.5 w-3.5" /> Added to Roadmap
-                      </>
+                      </span>
                     ) : (
-                      <>
-                        <Plus className="mr-1.5 h-3.5 w-3.5 text-terracotta" /> Add to Roadmap
-                      </>
+                      <span className="inline-flex items-center">
+                        <Plus className="mr-1.5 h-3.5 w-3.5" /> Add to Roadmap
+                      </span>
                     )}
                   </Button>
 
