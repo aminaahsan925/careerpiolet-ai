@@ -53,6 +53,11 @@ function normalizeEvents(city: string, drafts: EventDraft[]): TechEvent[] {
         ? draft.eventType!
         : "meetup";
       const eventCity = draft.city?.trim() || city;
+      const cityMatches =
+        city === "All Cities" ||
+        eventCity.toLowerCase().includes(city.toLowerCase()) ||
+        city.toLowerCase().includes(eventCity.toLowerCase());
+      if (!cityMatches) return null;
       const tags = Array.isArray(draft.tags)
         ? draft.tags.map((tag) => String(tag).trim()).filter(Boolean).slice(0, 6)
         : [];
@@ -87,7 +92,7 @@ function normalizeEvents(city: string, drafts: EventDraft[]): TechEvent[] {
 export async function getLiveTechEvents(city: string, targetRole?: string): Promise<TechEvent[]> {
   const cleanCity = city.trim() || "Lahore";
   const query = [
-    `upcoming developer hackathons conferences workshops meetups in ${cleanCity}, Pakistan`,
+    `upcoming developer hackathons conferences workshops meetups in ${cleanCity}, Pakistan only`,
     "official registration 2026 2027",
     targetRole ? `relevant to ${targetRole}` : "students and early-career developers",
   ].join(" ");
@@ -112,7 +117,7 @@ export async function getLiveTechEvents(city: string, targetRole?: string): Prom
         },
         {
           role: "user",
-          content: `Find upcoming tech events for ${cleanCity}, Pakistan from this evidence. Return at most 8 events with keys city, title, eventType, organizer, venue, eventDate (YYYY-MM-DD), eventUrl, registrationUrl, description, tags, prizePool, preparationTips. For preparationTips, give 3 concise, event-specific actions based on the event format, title, tags, and description. Do not give generic advice that ignores the event.\n\n${evidence}`,
+          content: `Find only events physically happening in ${cleanCity}, Pakistan from this evidence. Exclude events from other cities and nationwide listings unless they explicitly have a ${cleanCity} venue or city-specific date. Return at most 8 events with keys city, title, eventType, organizer, venue, eventDate (YYYY-MM-DD), eventUrl, registrationUrl, description, tags, prizePool, preparationTips. For preparationTips, give 3 concise, event-specific actions based on the event format, title, tags, and description. Do not give generic advice that ignores the event.\n\n${evidence}`,
         },
       ],
       { json: true, maxTokens: 2200, temperature: 0.1, totalTimeoutMs: 28_000 },

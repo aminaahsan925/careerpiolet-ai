@@ -295,7 +295,7 @@ export function TechEventsSection({ userCity = 'Lahore', targetRole }: TechEvent
               >
                 <div className="space-y-4">
                   {/* Top Header: Date Block, Badges & Prize */}
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
                       {/* Date Block */}
                       <div className="flex flex-col items-center justify-center rounded-2xl border border-terracotta/20 bg-terracotta/10 px-3 py-2 text-terracotta min-w-[50px] shadow-2xs">
@@ -388,13 +388,13 @@ export function TechEventsSection({ userCity = 'Lahore', targetRole }: TechEvent
                 </div>
 
                 {/* Actions */}
-                <div className="mt-5 flex items-center gap-2 border-t border-border pt-4">
+                <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-border pt-4">
                   <Button
                     variant={isPinned ? 'secondary' : 'outline'}
                     size="sm"
                     onClick={() => handleTogglePin(event)}
                     className={cn(
-                      'flex-1 rounded-xl text-xs font-semibold h-9 transition-all',
+                      'min-w-0 flex-1 rounded-xl text-xs font-semibold h-9 transition-all',
                       isPinned
                         ? 'border-terracotta/40 bg-terracotta/10 text-terracotta hover:bg-terracotta/20'
                         : 'border-border hover:border-terracotta/40 hover:text-terracotta'
@@ -425,19 +425,10 @@ export function TechEventsSection({ userCity = 'Lahore', targetRole }: TechEvent
                     href={event.registrationUrl || event.eventUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-colors hover:border-terracotta/40 hover:text-terracotta"
-                    title="Open registration link"
+                    className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl bg-terracotta px-3 text-xs font-semibold text-white transition-colors hover:bg-terracotta/90"
                     aria-label={`Register for ${event.title}`}
                   >
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                  <a
-                    href={event.registrationUrl || event.eventUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl bg-terracotta px-3 text-xs font-semibold text-white transition-colors hover:bg-terracotta/90"
-                  >
-                    Register <ExternalLink className="h-3.5 w-3.5" />
+                    Register <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
                   </a>
                 </div>
               </motion.div>
