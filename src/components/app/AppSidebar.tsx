@@ -4,6 +4,7 @@ import {
   BrainCircuit,
   ChevronDown,
   FileText,
+  Flame,
   LayoutGrid,
   Map,
   MessageCircle,
@@ -30,6 +31,7 @@ const NAV_GROUPS: Array<{ label: string; items: NavItem[] }> = [
       { label: "Dashboard", icon: LayoutGrid, to: "/dashboard" },
       { label: "Diagnosis", icon: Stethoscope, to: "/diagnosis" },
       { label: "Market Reality", icon: BarChart3, to: "/market" },
+      { label: "Tech Events", icon: Flame, to: "/events" },
     ],
   },
   {

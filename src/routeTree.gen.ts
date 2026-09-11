@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDiagnosisRouteImport } from './routes/_authenticated/diagnosis'
+import { Route as AuthenticatedEventsRouteImport } from './routes/_authenticated/events'
 import { Route as AuthenticatedFlightplanRouteImport } from './routes/_authenticated/flightplan'
 import { Route as AuthenticatedFutureTechRouteImport } from './routes/_authenticated/future-tech'
 import { Route as AuthenticatedJobmirrorRouteImport } from './routes/_authenticated/jobmirror'
@@ -59,6 +60,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
 const AuthenticatedDiagnosisRoute = AuthenticatedDiagnosisRouteImport.update({
   id: '/diagnosis',
   path: '/diagnosis',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEventsRoute = AuthenticatedEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedFlightplanRoute = AuthenticatedFlightplanRouteImport.update({
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/diagnosis': typeof AuthenticatedDiagnosisRoute
+  '/events': typeof AuthenticatedEventsRoute
   '/flightplan': typeof AuthenticatedFlightplanRoute
   '/future-tech': typeof AuthenticatedFutureTechRoute
   '/jobmirror': typeof AuthenticatedJobmirrorRoute
@@ -137,6 +144,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/diagnosis': typeof AuthenticatedDiagnosisRoute
+  '/events': typeof AuthenticatedEventsRoute
   '/flightplan': typeof AuthenticatedFlightplanRoute
   '/future-tech': typeof AuthenticatedFutureTechRoute
   '/jobmirror': typeof AuthenticatedJobmirrorRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/diagnosis': typeof AuthenticatedDiagnosisRoute
+  '/_authenticated/events': typeof AuthenticatedEventsRoute
   '/_authenticated/flightplan': typeof AuthenticatedFlightplanRoute
   '/_authenticated/future-tech': typeof AuthenticatedFutureTechRoute
   '/_authenticated/jobmirror': typeof AuthenticatedJobmirrorRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/dashboard'
     | '/diagnosis'
+    | '/events'
     | '/flightplan'
     | '/future-tech'
     | '/jobmirror'
@@ -195,6 +205,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/dashboard'
     | '/diagnosis'
+    | '/events'
     | '/flightplan'
     | '/future-tech'
     | '/jobmirror'
@@ -214,6 +225,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/_authenticated/dashboard'
     | '/_authenticated/diagnosis'
+    | '/_authenticated/events'
     | '/_authenticated/flightplan'
     | '/_authenticated/future-tech'
     | '/_authenticated/jobmirror'
@@ -283,6 +295,13 @@ declare module '@tanstack/react-router' {
       path: '/diagnosis'
       fullPath: '/diagnosis'
       preLoaderRoute: typeof AuthenticatedDiagnosisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/events': {
+      id: '/_authenticated/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof AuthenticatedEventsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/flightplan': {
@@ -361,6 +380,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDiagnosisRoute: typeof AuthenticatedDiagnosisRoute
+  AuthenticatedEventsRoute: typeof AuthenticatedEventsRoute
   AuthenticatedFlightplanRoute: typeof AuthenticatedFlightplanRoute
   AuthenticatedFutureTechRoute: typeof AuthenticatedFutureTechRoute
   AuthenticatedJobmirrorRoute: typeof AuthenticatedJobmirrorRoute
@@ -376,6 +396,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDiagnosisRoute: AuthenticatedDiagnosisRoute,
+  AuthenticatedEventsRoute: AuthenticatedEventsRoute,
   AuthenticatedFlightplanRoute: AuthenticatedFlightplanRoute,
   AuthenticatedFutureTechRoute: AuthenticatedFutureTechRoute,
   AuthenticatedJobmirrorRoute: AuthenticatedJobmirrorRoute,

@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   Circle,
   FileText,
+  Flame,
   FolderOpen,
   MapIcon,
   MessageCircle,
@@ -324,6 +325,34 @@ function DashboardPage() {
                 </motion.span>
               </Link>
             </AnimatedCard>
+          </div>
+
+          {/* TECH EVENTS & BACKGROUND INTEL PROMO BANNER */}
+          <div className="card-surface flex flex-col gap-4 rounded-2xl border border-terracotta/20 bg-gradient-to-r from-card via-card to-terracotta/5 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="flex items-center gap-3.5">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-terracotta/15 text-terracotta">
+                <Flame className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="rounded bg-terracotta/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-terracotta">
+                    Live Tech Ecosystem
+                  </span>
+                  <span className="text-[11px] font-semibold text-muted-foreground">
+                    Gemini Grounded Events & Offline Alerts
+                  </span>
+                </div>
+                <p className="mt-0.5 text-xs text-foreground font-medium">
+                  Inspect upcoming student hackathons, workshops & configure 4-in-1 offline push alerts.
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/events"
+              className="inline-flex shrink-0 items-center justify-center rounded-xl bg-terracotta px-4 py-2 text-xs font-bold text-white shadow-xs transition-all hover:bg-terracotta/90"
+            >
+              Explore Tech Events →
+            </Link>
           </div>
 
           {/* THREE-COLUMN SECTION */}
