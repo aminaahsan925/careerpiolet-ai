@@ -269,7 +269,7 @@ export function TechEventsSection({ userCity = 'Lahore', targetRole }: TechEvent
       </div>
 
       {/* ── Events Grid ───────────────────────────────────────────── */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 [&>*:last-child:nth-child(3n+1)]:lg:col-span-3 [&>*:last-child:nth-child(3n+2)]:lg:col-span-2">
         <AnimatePresence mode="popLayout">
           {filteredEvents.map((event, index) => {
             const daysLeft = getDaysUntil(event.eventDate);
