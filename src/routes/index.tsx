@@ -36,7 +36,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "CareerPilot AI — Build Your Future" },
       {
         property: "og:description",
-        content: "Career Intelligence Platform: Recruiter Audit, Market Reality, Flight Plan & AI Mentorship.",
+        content:
+          "Career Intelligence Platform: Recruiter Audit, Market Reality, Flight Plan & AI Mentorship.",
       },
     ],
   }),
@@ -116,8 +117,10 @@ const PLATFORM_SUITE = [
 
 const BEFORE_AFTER = [
   {
-    before: "Applying to dozens of roles blindly without knowing why recruiters pass on your resume.",
-    after: "Running a Recruiter Audit to catch red flags and optimize your positioning before submitting.",
+    before:
+      "Applying to dozens of roles blindly without knowing why recruiters pass on your resume.",
+    after:
+      "Running a Recruiter Audit to catch red flags and optimize your positioning before submitting.",
   },
   {
     before: "Wasting months learning outdated frameworks recommended by obsolete tutorials.",
@@ -200,7 +203,9 @@ function Landing() {
               <span className="block text-terracotta">Future</span>
             </h1>
             <p className="mt-6 max-w-[420px] text-[14px] leading-relaxed text-white/75">
-              An intelligent career engine that analyzes your current profile, measures your readiness against real market demands, identifies critical skill gaps, and crafts your step-by-step path to your target role.
+              An intelligent career engine that analyzes your current profile, measures your
+              readiness against real market demands, identifies critical skill gaps, and crafts your
+              step-by-step path to your target role.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link
@@ -229,7 +234,8 @@ function Landing() {
               From current profile to hired professional.
             </h2>
             <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-              CareerPilot replaces fragmented advice with an integrated, intelligence-driven career pipeline.
+              CareerPilot replaces fragmented advice with an integrated, intelligence-driven career
+              pipeline.
             </p>
           </div>
 
@@ -290,7 +296,9 @@ function Landing() {
                 See yourself through a hiring manager&apos;s eyes.
               </h2>
               <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground">
-                The Recruiter Audit engine evaluates your candidate profile against real industry standards. It catches candidate red flags, identifies missing production proof, and provides exact positioning rewrites to make your resume unignorable.
+                The Recruiter Audit engine evaluates your candidate profile against real industry
+                standards. It catches candidate red flags, identifies missing production proof, and
+                provides exact positioning rewrites to make your resume unignorable.
               </p>
 
               <div className="mt-8 space-y-4">
@@ -298,14 +306,22 @@ function Landing() {
                   <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-terracotta" />
                   <div>
                     <p className="text-[13.5px] font-semibold text-foreground">Red Flag Exposure</p>
-                    <p className="text-[12.5px] text-muted-foreground">Detect formatting errors, vague impact statements, and missing technical proof.</p>
+                    <p className="text-[12.5px] text-muted-foreground">
+                      Detect formatting errors, vague impact statements, and missing technical
+                      proof.
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <UserCheck className="mt-0.5 h-4 w-4 shrink-0 text-terracotta" />
                   <div>
-                    <p className="text-[13.5px] font-semibold text-foreground">Strategic Positioning Advice</p>
-                    <p className="text-[12.5px] text-muted-foreground">Reframe your experience to match what senior engineering leaders actively look for.</p>
+                    <p className="text-[13.5px] font-semibold text-foreground">
+                      Strategic Positioning Advice
+                    </p>
+                    <p className="text-[12.5px] text-muted-foreground">
+                      Reframe your experience to match what senior engineering leaders actively look
+                      for.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -329,7 +345,9 @@ function Landing() {
                       <ShieldCheck className="h-5 w-5" />
                     </div>
                     <div>
-                      <h4 className="text-[15px] font-bold text-foreground">Recruiter Audit Report</h4>
+                      <h4 className="text-[15px] font-bold text-foreground">
+                        Recruiter Audit Report
+                      </h4>
                       <p className="text-[11.5px] text-muted-foreground flex items-center gap-1.5">
                         <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                         ATS Match Score: <strong className="text-foreground">91%</strong>
@@ -337,7 +355,9 @@ function Landing() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <span className="text-[28px] font-extrabold leading-none text-foreground">84</span>
+                    <span className="text-[28px] font-extrabold leading-none text-foreground">
+                      84
+                    </span>
                     <span className="text-[13px] font-semibold text-muted-foreground">/100</span>
                   </div>
                 </div>
@@ -348,13 +368,17 @@ function Landing() {
                       <span className="text-[12px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
                         Critical Red Flag Detected
                       </span>
-                      <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400">High Priority</span>
+                      <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                        High Priority
+                      </span>
                     </div>
                     <p className="mt-1.5 text-[13px] text-foreground font-medium">
-                      &quot;Resume lacks measurable production metrics for backend microservices.&quot;
+                      &quot;Resume lacks measurable production metrics for backend
+                      microservices.&quot;
                     </p>
                     <p className="mt-1 text-[12px] text-muted-foreground">
-                      Fix: Quantify API throughput or latency reductions in your recent project section.
+                      Fix: Quantify API throughput or latency reductions in your recent project
+                      section.
                     </p>
                   </div>
 
@@ -368,7 +392,8 @@ function Landing() {
                       </span>
                     </div>
                     <p className="mt-1 text-[13px] text-foreground font-medium">
-                      &quot;Strong architecture ownership demonstrated in React & Next.js projects.&quot;
+                      &quot;Strong architecture ownership demonstrated in React & Next.js
+                      projects.&quot;
                     </p>
                   </div>
                 </div>
@@ -390,8 +415,12 @@ function Landing() {
               <div className="card-surface p-7 sm:p-8 space-y-6">
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5">
                   <div>
-                    <span className="text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground">Target Role Demands</span>
-                    <p className="text-[16px] font-bold text-foreground">AI Systems & Full-Stack Architect</p>
+                    <span className="text-[10.5px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Target Role Demands
+                    </span>
+                    <p className="text-[16px] font-bold text-foreground">
+                      AI Systems & Full-Stack Architect
+                    </p>
                   </div>
                   <span className="flex items-center gap-1.5 rounded-lg border border-terracotta/30 bg-terracotta/10 px-3 py-1.5 text-[12px] font-semibold text-terracotta">
                     <Activity className="h-3.5 w-3.5 animate-pulse" /> Live Q3 2026 Radar
@@ -404,8 +433,18 @@ function Landing() {
                       <TrendingUp className="h-3.5 w-3.5" /> High Market Demand
                     </div>
                     <div className="mt-3 flex flex-wrap gap-1.5">
-                      {["TypeScript", "React 19", "Next.js", "Agentic AI", "Vector DBs", "PyTorch"].map((sk) => (
-                        <span key={sk} className="rounded bg-emerald-500/10 px-2 py-0.5 text-[11.5px] font-medium text-emerald-700 dark:text-emerald-300">
+                      {[
+                        "TypeScript",
+                        "React 19",
+                        "Next.js",
+                        "Agentic AI",
+                        "Vector DBs",
+                        "PyTorch",
+                      ].map((sk) => (
+                        <span
+                          key={sk}
+                          className="rounded bg-emerald-500/10 px-2 py-0.5 text-[11.5px] font-medium text-emerald-700 dark:text-emerald-300"
+                        >
                           {sk}
                         </span>
                       ))}
@@ -418,7 +457,10 @@ function Landing() {
                     </div>
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       {["Legacy jQuery", "REST Monoliths", "Manual Deployments"].map((sk) => (
-                        <span key={sk} className="rounded bg-rose-500/10 px-2 py-0.5 text-[11.5px] font-medium text-rose-700 dark:text-rose-300">
+                        <span
+                          key={sk}
+                          className="rounded bg-rose-500/10 px-2 py-0.5 text-[11.5px] font-medium text-rose-700 dark:text-rose-300"
+                        >
                           {sk}
                         </span>
                       ))}
@@ -431,7 +473,8 @@ function Landing() {
                     <Flame className="h-3.5 w-3.5" /> Global Frontier Tech Intelligence
                   </div>
                   <p className="mt-1.5 text-[12.5px] text-muted-foreground leading-relaxed">
-                    Tracks emerging AI models from Google DeepMind, OpenAI, Anthropic, and DeepSeek to ensure your skills align with 2030 paradigm shifts.
+                    Tracks emerging AI models from Google DeepMind, OpenAI, Anthropic, and DeepSeek
+                    to ensure your skills align with 2030 paradigm shifts.
                   </p>
                 </div>
               </div>
@@ -445,7 +488,9 @@ function Landing() {
                 The market changes. Your preparation should too.
               </h2>
               <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground">
-                CareerPilot continuously cross-evaluates your profile against current industry demand data—showing what skills are skyrocketing, what legacy tools are dying, and what global tech giants are planning next.
+                CareerPilot continuously cross-evaluates your profile against current industry
+                demand data—showing what skills are skyrocketing, what legacy tools are dying, and
+                what global tech giants are planning next.
               </p>
 
               <div className="mt-8">
@@ -468,25 +513,34 @@ function Landing() {
                 Daily Execution Cockpit
               </p>
               <h2 className="mt-4 text-[clamp(1.8rem,3.4vw,2.5rem)] font-bold tracking-[-0.03em] text-foreground">
-                Turn your long-term roadmap into daily execution velocity.
+                Turn your roadmap into focused daily progress.
               </h2>
               <p className="mt-4 text-[14px] leading-relaxed text-muted-foreground">
-                Most career plans fail due to lack of daily momentum. Flight Plan breaks your target goals down into bite-sized daily sprints, active project tasks, and weekly milestone tracking.
+                Flight Plan turns your goals into clear daily actions, active project work, and
+                visible weekly progress.
               </p>
 
               <div className="mt-8 space-y-4">
                 <div className="flex items-start gap-3">
                   <Plane className="mt-0.5 h-4 w-4 shrink-0 text-terracotta" />
                   <div>
-                    <p className="text-[13.5px] font-semibold text-foreground">Daily Sprint Focus</p>
-                    <p className="text-[12.5px] text-muted-foreground">Clear, prioritized daily actions to close your skill gaps step by step.</p>
+                    <p className="text-[13.5px] font-semibold text-foreground">
+                      Daily Sprint Focus
+                    </p>
+                    <p className="text-[12.5px] text-muted-foreground">
+                      Clear, prioritized daily actions to close your skill gaps step by step.
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Clock className="mt-0.5 h-4 w-4 shrink-0 text-terracotta" />
                   <div>
-                    <p className="text-[13.5px] font-semibold text-foreground">Weekly Velocity Tracking</p>
-                    <p className="text-[12.5px] text-muted-foreground">Measure real progress every week until you are fully ready to land the role.</p>
+                    <p className="text-[13.5px] font-semibold text-foreground">
+                      Weekly Velocity Tracking
+                    </p>
+                    <p className="text-[12.5px] text-muted-foreground">
+                      Measure real progress every week until you are fully ready to land the role.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -511,37 +565,39 @@ function Landing() {
                     </div>
                     <div>
                       <h4 className="text-[15px] font-bold text-foreground">Flight Plan Cockpit</h4>
-                      <p className="text-[11.5px] text-muted-foreground">Active Daily Sprint</p>
+                      <p className="text-[11.5px] text-muted-foreground">Example daily sprint</p>
                     </div>
                   </div>
-                  <span className="rounded-md bg-emerald-500/10 px-2.5 py-1 text-[11.5px] font-semibold text-emerald-700 dark:text-emerald-400">
-                    Weekly Velocity: 88%
+                  <span className="shrink-0 rounded-md bg-secondary px-2.5 py-1 text-[11.5px] font-semibold text-muted-foreground">
+                    This week
                   </span>
                 </div>
 
                 <div className="space-y-3">
                   {[
-                    { title: "Implement RAG Vector Search in Project 2", tag: "High Priority", done: true },
-                    { title: "Review Recruiter Audit feedback on system design", tag: "Positioning", done: true },
-                    { title: "Complete System Architecture benchmark tests", tag: "In Progress", done: false },
+                    { title: "Improve project search", tag: "Completed", done: true },
+                    { title: "Review recruiter feedback", tag: "Completed", done: true },
+                    { title: "Complete architecture practice", tag: "In progress", done: false },
                   ].map((task, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between rounded-xl border border-border/80 bg-background/50 p-3.5"
+                      className="flex min-w-0 flex-col gap-2 rounded-xl border border-border/80 bg-background/50 p-3.5 sm:flex-row sm:items-center sm:justify-between"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex min-w-0 items-center gap-3">
                         <CheckCircle2
                           className={`h-4 w-4 ${task.done ? "text-emerald-500" : "text-muted-foreground/40"}`}
                         />
                         <span
-                          className={`text-[13px] font-medium ${
-                            task.done ? "line-through text-muted-foreground" : "text-foreground"
+                          className={`min-w-0 truncate text-[13px] font-medium ${
+                            task.done ? "text-muted-foreground" : "text-foreground"
                           }`}
                         >
                           {task.title}
                         </span>
                       </div>
-                      <span className="text-[11px] font-semibold text-terracotta">{task.tag}</span>
+                      <span className="shrink-0 text-[11px] font-semibold text-terracotta">
+                        {task.tag}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -633,7 +689,8 @@ function Landing() {
               <span className="text-terracotta">START WITH A PLAN.</span>
             </h2>
             <p className="text-[14px] leading-relaxed text-muted-foreground">
-              Audit your profile like a recruiter. Master Market Reality. Execute your daily Flight Plan.
+              Audit your profile like a recruiter. Master Market Reality. Execute your daily Flight
+              Plan.
             </p>
             <div className="pt-2">
               <Link
