@@ -289,133 +289,135 @@ export function TechEventsSection({ userCity = 'Lahore', targetRole }: TechEvent
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.2, delay: index * 0.03 }}
                 className={cn(
-                  'card-surface group flex flex-col justify-between rounded-3xl border p-5 sm:p-6 transition-all hover:border-terracotta/30 hover:shadow-md',
-                  isPinned ? 'border-terracotta/30 bg-terracotta/[0.015]' : 'border-border'
+                  'group rounded-2xl border transition-all hover:shadow-lift',
+                  isPinned
+                    ? 'border-terracotta/30 bg-terracotta/[0.04]'
+                    : 'border-border/60 bg-secondary/30 hover:border-terracotta/25 hover:bg-secondary/50'
                 )}
               >
-                <div className="space-y-4">
-                  {/* Top Header: Date Block, Badges & Prize */}
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      {/* Date Block */}
-                      <div className="flex flex-col items-center justify-center rounded-2xl border border-terracotta/20 bg-terracotta/10 px-3 py-2 text-terracotta min-w-[50px] shadow-2xs">
-                        <span className="text-[10px] font-extrabold uppercase tracking-wide leading-tight">
-                          {monthStr}
-                        </span>
-                        <span className="font-display text-lg font-bold leading-tight">
-                          {dayNum}
-                        </span>
-                      </div>
+                {/* ── Row Layout ─────────────────────────────────── */}
+                <div className="flex flex-col sm:flex-row sm:items-start gap-4 p-4 sm:p-5">
 
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5 flex-wrap">
-                          <span
-                            className={cn(
-                              'rounded-md px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider',
-                              event.eventType === 'hackathon'
-                                ? 'bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300'
-                                : event.eventType === 'workshop'
-                                  ? 'bg-blue-100 dark:bg-blue-950/50 text-blue-800 dark:text-blue-300'
-                                  : 'bg-secondary text-foreground'
-                            )}
-                          >
-                            {event.eventType}
-                          </span>
-                          {daysLeft > 0 && (
-                            <span className="text-[10.5px] font-medium text-muted-foreground">
-                              · in {daysLeft}d
-                            </span>
-                          )}
-                        </div>
-                        <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground truncate">
-                          <MapPin className="h-3 w-3 text-terracotta shrink-0" />
-                          <span className="truncate">{event.city}</span>
-                        </p>
-                      </div>
+                  {/* Date badge column */}
+                  <div className="flex flex-col items-center justify-center rounded-xl border border-terracotta/20 bg-terracotta/10 px-3 py-2.5 text-terracotta min-w-[52px] shrink-0 shadow-2xs">
+                    <span className="text-[9px] font-extrabold uppercase tracking-widest leading-tight">
+                      {monthStr}
+                    </span>
+                    <span className="font-display text-xl font-bold leading-tight">
+                      {dayNum}
+                    </span>
+                  </div>
+
+                  {/* Main content */}
+                  <div className="flex-1 min-w-0 space-y-2.5">
+                    {/* Header row */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span
+                        className={cn(
+                          'rounded-md px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider',
+                          event.eventType === 'hackathon'
+                            ? 'bg-amber-100 text-amber-800'
+                            : event.eventType === 'workshop'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-secondary text-foreground'
+                        )}
+                      >
+                        {event.eventType}
+                      </span>
+                      {daysLeft > 0 && (
+                        <span className="text-[10.5px] font-medium text-muted-foreground">
+                          · in {daysLeft}d
+                        </span>
+                      )}
+                      <span className="flex items-center gap-0.5 text-[10.5px] text-muted-foreground">
+                        <MapPin className="h-3 w-3 text-terracotta shrink-0" />
+                        {event.city}
+                      </span>
+                      {event.prizePool && (
+                        <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9.5px] font-bold text-emerald-800 border border-emerald-200/60">
+                          <Award className="h-2.5 w-2.5" /> {event.prizePool}
+                        </span>
+                      )}
                     </div>
 
-                    {event.prizePool && (
-                      <span className="shrink-0 flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-950/50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-300 border border-emerald-300/30">
-                        <Award className="h-3 w-3" /> {event.prizePool}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Title & Description */}
-                  <div className="space-y-1.5">
-                    <h3 className="font-display text-base font-bold text-foreground leading-snug group-hover:text-terracotta transition-colors">
+                    {/* Title */}
+                    <h3 className="font-display text-[14.5px] font-bold text-foreground leading-snug group-hover:text-terracotta transition-colors">
                       {event.title}
                     </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+
+                    {/* Description */}
+                    <p className="text-[12px] text-muted-foreground leading-relaxed line-clamp-2">
                       {event.description}
                     </p>
-                  </div>
 
-                  {/* Venue & Organizer Details */}
-                  <div className="rounded-2xl bg-secondary/30 p-3 text-xs space-y-1 border border-border/40">
-                    <p className="text-foreground truncate">
-                      <span className="text-muted-foreground">Organizer:</span> {event.organizer}
-                    </p>
-                    <p className="text-foreground truncate">
-                      <span className="text-muted-foreground">Venue:</span> {event.venue}
-                    </p>
-                  </div>
-
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1.5">
-                    {event.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-lg bg-secondary/60 px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
-                      >
-                        #{tag}
+                    {/* Organizer + Venue row */}
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-0.5 text-[11.5px] text-muted-foreground">
+                      <span>
+                        <span className="font-semibold text-foreground/70">Organizer:</span>{' '}
+                        {event.organizer}
                       </span>
-                    ))}
-                  </div>
+                      <span className="hidden sm:inline text-border">·</span>
+                      <span>
+                        <span className="font-semibold text-foreground/70">Venue:</span>{' '}
+                        {event.venue}
+                      </span>
+                    </div>
 
-                  <details className="rounded-2xl border border-terracotta/15 bg-terracotta/[0.03] px-3 py-2.5">
-                    <summary className="cursor-pointer list-none text-xs font-semibold text-terracotta">
-                      How to prepare for this {event.eventType}
-                    </summary>
-                    <ul className="mt-2 space-y-1.5 pl-4 text-[11px] leading-relaxed text-muted-foreground">
-                      {preparationTipsFor(event).map((tip) => (
-                        <li key={tip} className="list-disc">
-                          {tip}
-                        </li>
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-1">
+                      {event.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-md bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"
+                        >
+                          #{tag}
+                        </span>
                       ))}
-                    </ul>
-                  </details>
+                    </div>
+
+                    {/* Prep tips */}
+                    <details className="rounded-xl border border-terracotta/15 bg-terracotta/[0.04] px-3 py-2">
+                      <summary className="cursor-pointer list-none text-[11.5px] font-semibold text-terracotta">
+                        How to prepare for this {event.eventType}
+                      </summary>
+                      <ul className="mt-1.5 space-y-1 pl-4 text-[11px] leading-relaxed text-muted-foreground">
+                        {preparationTipsFor(event).map((tip) => (
+                          <li key={tip} className="list-disc">
+                            {tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  </div>
                 </div>
 
-                {/* Actions */}
-                <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-border pt-4">
+                {/* ── Actions bar ────────────────────────────────── */}
+                <div className="flex items-center gap-2 border-t border-border/40 bg-secondary/20 px-4 py-3 rounded-b-2xl">
                   <Button
                     variant={isPinned ? 'secondary' : 'outline'}
                     size="sm"
                     onClick={() => handleTogglePin(event)}
                     className={cn(
-                      'min-w-0 flex-1 rounded-xl text-xs font-semibold h-9 transition-all',
+                      'flex-1 rounded-xl text-xs font-semibold h-8 transition-all',
                       isPinned
                         ? 'border-terracotta/40 bg-terracotta/10 text-terracotta hover:bg-terracotta/20'
-                        : 'border-border hover:border-terracotta/40 hover:text-terracotta'
+                        : 'border-border/60 bg-card hover:border-terracotta/40 hover:text-terracotta'
                     )}
                   >
-                    {isPinned ? (
-                      <span className="inline-flex items-center">
-                        <Check className="mr-1.5 h-3.5 w-3.5" /> Added to Roadmap
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center">
-                        <Plus className="mr-1.5 h-3.5 w-3.5" /> Add to Roadmap
-                      </span>
-                    )}
+                    <span className="inline-flex items-center">
+                      {isPinned ? (
+                        <><Check className="mr-1.5 h-3.5 w-3.5" /> Added to Roadmap</>
+                      ) : (
+                        <><Plus className="mr-1.5 h-3.5 w-3.5" /> Add to Roadmap</>
+                      )}
+                    </span>
                   </Button>
 
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={() => handleRemindMe(event)}
-                    className="h-9 w-9 rounded-xl border border-border hover:border-terracotta/40 hover:text-terracotta text-muted-foreground"
+                    className="h-8 w-8 rounded-xl border border-border/60 bg-card hover:border-terracotta/40 hover:text-terracotta text-muted-foreground"
                     title="Notify me / Set Reminder"
                   >
                     <Bell className="h-3.5 w-3.5" />
@@ -425,7 +427,7 @@ export function TechEventsSection({ userCity = 'Lahore', targetRole }: TechEvent
                     href={event.registrationUrl || event.eventUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl bg-terracotta px-3 text-xs font-semibold text-white transition-colors hover:bg-terracotta/90"
+                    className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-xl bg-terracotta px-3 text-xs font-semibold text-white transition-colors hover:bg-terracotta/90"
                     aria-label={`Register for ${event.title}`}
                   >
                     Register <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
