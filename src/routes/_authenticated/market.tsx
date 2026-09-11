@@ -405,13 +405,13 @@ function MarketRealityPage() {
             {/* ── Top Row: Illustration + Hero Copy ─────────────────── */}
             <div className="relative z-10 grid min-w-0 items-stretch lg:grid-cols-[1.1fr_0.9fr]">
               {/* Left: Illustration Panel */}
-              <div className="relative order-2 flex min-w-0 min-h-[360px] items-center justify-center overflow-hidden bg-gradient-to-br from-[#FAF7F2] to-[#F3EDE4] p-0 sm:min-h-[440px] lg:order-2 lg:min-h-[560px] lg:rounded-r-3xl">
+              <div className="relative order-2 flex min-w-0 min-h-[360px] items-center justify-center overflow-hidden bg-gradient-to-br from-[#f8f2ea] via-[#f5ede3] to-[#ead8c8] p-0 sm:min-h-[440px] lg:order-2 lg:-ml-8 lg:min-h-[560px] lg:rounded-r-3xl lg:pl-8">
                 {/* Subtle corner badge */}
                 <motion.div
                   initial={{ opacity: 0, y: -12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-full border border-terracotta/30 bg-white/90 backdrop-blur px-3 py-1.5 shadow-md"
+                  className="absolute top-4 left-8 z-20 flex items-center gap-2 rounded-full border border-terracotta/25 bg-[#f8f2ea]/85 px-3 py-1.5 shadow-sm backdrop-blur"
                 >
                   <div className="flex h-5 w-5 items-center justify-center rounded-full bg-terracotta text-white">
                     <BarChart3 className="h-3 w-3" />
@@ -422,7 +422,7 @@ function MarketRealityPage() {
                 <motion.img
                   src="/market-reality-hero.png"
                   alt="Market Reality — woman presenting market data on a whiteboard"
-                  className="relative z-10 block h-full min-h-[360px] w-full min-w-0 max-w-full object-contain object-center drop-shadow-lg sm:min-h-[440px] lg:min-h-[560px]"
+                  className="relative z-10 block h-full min-h-[360px] w-full min-w-0 max-w-full object-contain object-center mix-blend-multiply opacity-[0.94] sm:min-h-[440px] lg:min-h-[560px]"
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, ease: "easeOut" }}
