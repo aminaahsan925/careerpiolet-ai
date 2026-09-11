@@ -16,7 +16,7 @@ export function AppLayout({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen min-w-0 overflow-x-hidden bg-background">
+    <div className="flex min-h-screen min-w-0 overflow-x-clip bg-background">
       <aside className="sticky top-0 hidden h-screen lg:block">
         <AppSidebar />
       </aside>
@@ -35,7 +35,7 @@ export function AppLayout({
         </div>
       ) : null}
 
-      <div className="min-w-0 flex-1 overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <div className="min-w-0 flex-1 overflow-x-clip px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         {(title || subtitle) && (
           <header className="flex min-w-0 flex-wrap items-start gap-4">
             <button
