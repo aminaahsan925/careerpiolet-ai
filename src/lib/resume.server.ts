@@ -29,10 +29,19 @@ function stripXml(xml: string): string {
 export async function extractResumeText(bytes: Uint8Array, fileName: string): Promise<string> {
   const lower = fileName.toLowerCase();
   if (lower.endsWith(".pdf")) {
-    const { extractText, getDocumentProxy } = await import("unpdf");
-    const doc = await getDocumentProxy(bytes);
-    const { text } = await extractText(doc, { mergePages: true });
-    return String(text ?? "").trim();
+    try {
+      const { extractText, getDocumentProxy } = await import("unpdf");
+      const doc = await getDocumentProxy(bytes);
+      const { text } = await extractText(doc, { mergePages: true });
+      const extracted = String(text ?? "").trim();
+      if (extracted.length > 0) return extracted;
+      throw new Error("unpdf returned empty text");
+    } catch (e) {
+      console.warn("[Resume] unpdf failed, trying pdf-parse:", e);
+      const { default: pdfParse } = await import("pdf-parse");
+      const data = await pdfParse(bytes);
+      return data.text?.trim() ?? "";
+    }
   }
   if (lower.endsWith(".docx")) {
     const { unzipSync, strFromU8 } = await import("fflate");
