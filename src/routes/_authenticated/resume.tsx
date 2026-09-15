@@ -111,7 +111,12 @@ function ResumePage() {
           description: "ATS score, skill extraction, and AI recommendations updated.",
         }),
       onError: (error) => {
-        const msg = error instanceof Error ? error.message : "Could not process resume file.";
+        const msg =
+          error instanceof Error
+            ? error.message
+            : typeof error === "object" && error !== null && "message" in error
+              ? String((error as Record<string, unknown>).message)
+              : "Could not process resume file.";
         console.error("[Resume] upload/analyze failed:", error);
         toast.error(msg);
       },

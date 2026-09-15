@@ -92,6 +92,22 @@ export function useLatestAnalysis() {
 const MAX_BYTES = 5 * 1024 * 1024;
 const ALLOWED = [".pdf", ".docx", ".txt"];
 
+/** Extracts a human-readable message from Supabase errors (plain objects, not Error instances). */
+function extractMessage(err: unknown, fallback: string): string {
+  if (err instanceof Error) return err.message;
+  if (err && typeof err === "object") {
+    const e = err as Record<string, unknown>;
+    if (typeof e["message"] === "string") return e["message"];
+    if (typeof e["msg"] === "string") return e["msg"];
+    try {
+      return JSON.stringify(err);
+    } catch {
+      /* ignore */
+    }
+  }
+  return fallback;
+}
+
 /** Uploads to private storage, records the row, then runs the AI analysis. */
 export function useUploadAndAnalyze() {
   const queryClient = useQueryClient();
@@ -107,8 +123,15 @@ export function useUploadAndAnalyze() {
         throw new Error("Your session has expired. Please sign in again.");
 
       const path = `${auth.user.id}/${Date.now()}-${file.name.replace(/[^\w.-]+/g, "_")}`;
-      const upload = await supabase.storage.from("resumes").upload(path, file, { upsert: false });
-      if (upload.error) throw upload.error;
+      const upload = await supabase.storage.from("resumes").upload(path, file, {
+        upsert: false,
+        contentType: file.type || undefined,
+      });
+      if (upload.error) {
+        const msg = extractMessage(upload.error, "File upload failed");
+        console.error("[Resume] storage upload error:", upload.error);
+        throw new Error(msg);
+      }
 
       const { data: resume, error: insertError } = await supabase
         .from("resumes")
@@ -123,10 +146,18 @@ export function useUploadAndAnalyze() {
       if (insertError) {
         // Avoid leaving private files behind when the metadata row cannot be saved.
         await supabase.storage.from("resumes").remove([path]);
-        throw insertError;
+        const msg = extractMessage(insertError, "Could not save resume metadata");
+        console.error("[Resume] DB insert error:", insertError);
+        throw new Error(msg);
       }
 
-      return analyzeResume({ data: { resumeId: resume.id as string } });
+      try {
+        return await analyzeResume({ data: { resumeId: resume.id as string } });
+      } catch (err) {
+        const msg = extractMessage(err, "AI analysis failed");
+        console.error("[Resume] analyzeResume error:", err);
+        throw new Error(msg);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["latest-resume"] });
