@@ -641,41 +641,85 @@ export async function analyzeStoredResume(
     .eq("user_id", userId)
     .maybeSingle();
   const targetRole = goal.data?.target_role ?? null;
+
+  /* ---------- AI analysis with retry ---------- */
   const system =
-    "You are an ATS resume reviewer. Return only valid JSON with summary, strengths, weaknesses, detected_skills, recommendations (title and impact), and role_matches (role and match). Be specific and concise.";
+    "You are an ATS resume reviewer. Return ONLY a single JSON object (no markdown, no code fences) with these exact keys: summary (string), strengths (array of strings), weaknesses (array of strings), detected_skills (array of strings), recommendations (array of {title, impact}), role_matches (array of {role, match} where match is a number 0-100). Be specific and concise.";
   let parsed: Record<string, unknown> = {};
-  try {
-    const raw = await groqChat(
-      [
-        { role: "system", content: system },
-        {
-          role: "user",
-          content: `Target role: ${targetRole ?? "not specified"}\nResume:\n${resumeText.slice(0, 16000)}`,
-        },
-      ],
-      { json: true, maxTokens: 1800, temperature: 0.2 },
-    );
-    parsed = parseJsonObject<Record<string, unknown>>(raw);
-  } catch (error) {
-    console.warn("[Resume] AI analysis failed; saving deterministic format result.", error);
+  let aiFailed = false;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const raw = await groqChat(
+        [
+          { role: "system", content: system },
+          {
+            role: "user",
+            content: `Target role: ${targetRole ?? "not specified"}\nResume:\n${resumeText.slice(0, 12000)}`,
+          },
+        ],
+        { json: true, maxTokens: 1500, temperature: 0.2 },
+      );
+      parsed = parseJsonObject<Record<string, unknown>>(raw);
+      // If we got at least some useful data, stop retrying
+      if (parsed["strengths"] || parsed["detected_skills"]) break;
+    } catch (error) {
+      console.warn(`[Resume] AI analysis attempt ${attempt + 1} failed.`, error);
+      if (attempt === 1) aiFailed = true;
+    }
   }
 
+  /* ---------- Deterministic fallback skill extraction ---------- */
   const strings = (value: unknown) =>
     Array.isArray(value)
-      ? value.filter((item): item is string => typeof item === "string").slice(0, 10)
+      ? value.filter((item): item is string => typeof item === "string").slice(0, 15)
       : [];
-  const rawRecommendations = parsed["recommendations"];
-  const recommendations = Array.isArray(rawRecommendations)
-    ? rawRecommendations
-        .filter((item): item is { title: string; impact: string } =>
-          Boolean(
-            item &&
-            typeof item === "object" &&
-            typeof (item as Record<string, unknown>)["title"] === "string",
-          ),
+
+  let detectedSkills = strings(parsed["detected_skills"]);
+  if (detectedSkills.length === 0) {
+    // Fallback: scan resume text against the known tech vocabulary
+    const lower = resumeText.toLowerCase();
+    detectedSkills = TECH_VOCAB.filter((term) => {
+      const pattern = new RegExp(`(^|[^a-z0-9+#.])${escapeRegex(term)}([^a-z0-9+#]|$)`, "i");
+      return pattern.test(lower);
+    }).slice(0, 15);
+  }
+
+  /* ---------- Deterministic fallback strengths & weaknesses ---------- */
+  let strengths = strings(parsed["strengths"]);
+  let weaknesses = strings(parsed["weaknesses"]);
+  if (strengths.length === 0 && weaknesses.length === 0) {
+    const passed = checks.filter((c) => c.status === "pass");
+    const failed = checks.filter((c) => c.status === "fail");
+    const warned = checks.filter((c) => c.status === "warn");
+    strengths = passed.slice(0, 5).map((c) => c.label + ": " + c.detail);
+    weaknesses = [...failed, ...warned].slice(0, 5).map((c) => c.label + ": " + c.detail);
+  }
+
+  /* ---------- Deterministic fallback recommendations ---------- */
+  let recommendations = Array.isArray(parsed["recommendations"])
+    ? (parsed["recommendations"] as Record<string, unknown>[])
+        .filter(
+          (item): item is Record<string, unknown> =>
+            Boolean(
+              item &&
+              typeof item === "object" &&
+              typeof (item as Record<string, unknown>)["title"] === "string",
+            ),
         )
+        .map((item) => ({
+          title: String(item["title"] ?? ""),
+          impact: String(item["impact"] ?? ""),
+        }))
         .slice(0, 8)
     : [];
+  if (recommendations.length === 0) {
+    const failed = checks.filter((c) => c.status === "fail");
+    const warned = checks.filter((c) => c.status === "warn");
+    recommendations = [...failed, ...warned].slice(0, 5).map((c) => ({
+      title: `Fix: ${c.label}`,
+      impact: c.detail,
+    }));
+  }
   const rawRoleMatches = parsed["role_matches"];
   const roleMatches = Array.isArray(rawRoleMatches)
     ? rawRoleMatches
@@ -695,7 +739,7 @@ export async function analyzeStoredResume(
           } else if (typeof raw === "string") {
             // Try to extract a number from strings like "80%", "≈80%", "High (≈80%)"
             const extracted = raw.match(/(\d+)/);
-            match = extracted ? parseInt(extracted[1], 10) : 0;
+            match = extracted?.[1] ? parseInt(extracted[1], 10) : 0;
           } else {
             match = 0;
           }
@@ -714,14 +758,18 @@ export async function analyzeStoredResume(
     verdict:
       typeof parsed["verdict"] === "string"
         ? parsed["verdict"]
-        : "Your resume has been checked for ATS readability and recruiter proof.",
+        : aiFailed
+          ? "AI analysis unavailable — showing ATS formatting checks only."
+          : "Your resume has been checked for ATS readability and recruiter proof.",
     summary:
       typeof parsed["summary"] === "string"
         ? parsed["summary"]
-        : "Your resume was analyzed with deterministic ATS formatting checks.",
-    strengths: strings(parsed["strengths"]),
-    weaknesses: strings(parsed["weaknesses"]),
-    detected_skills: strings(parsed["detected_skills"]),
+        : aiFailed
+          ? `ATS format score: ${formatScore}/100. AI skill extraction and recommendations were generated from deterministic analysis because the AI service was unavailable.`
+          : "Your resume was analyzed with deterministic ATS formatting checks.",
+    strengths,
+    weaknesses,
+    detected_skills: detectedSkills,
     recommendations,
     role_matches: roleMatches,
     keyword_hits: [],
