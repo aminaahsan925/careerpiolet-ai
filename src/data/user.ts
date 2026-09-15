@@ -32,6 +32,7 @@ export type Profile = {
   education_prep: string | null;
   education_prep_note: string | null;
   weekly_hours: string | null;
+  city: string | null;
 };
 
 export type CareerGoal = {
@@ -65,6 +66,8 @@ export type CareerUser = {
   goalProgress: number;
   education: string | null;
   skills: Skill[];
+  /** User's city for location-aware features (events, notifications). */
+  city: string;
   /* Phase 1: these feeds have no real data source yet, so they stay empty
      instead of showing invented numbers. Phase 2 fills them in. */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

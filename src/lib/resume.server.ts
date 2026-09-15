@@ -731,7 +731,7 @@ export async function analyzeStoredResume(
       role_matches: result.role_matches,
       verdict: result.verdict,
       format_audit: result.format_audit,
-    } as never)
+    })
     .select("id")
     .single();
   if (insertError || !analysis)
