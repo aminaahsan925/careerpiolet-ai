@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { analyzeStoredResume } from "./resume.server";
 
 export const analyzeResume = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -11,5 +10,20 @@ export const analyzeResume = createServerFn({ method: "POST" })
     return { resumeId };
   })
   .handler(async ({ data, context }) => {
-    return analyzeStoredResume(context.supabase, context.userId, data.resumeId);
+    console.info("[CareerPilot][analyzeResume] start", { userId: context.userId });
+    const { analyzeStoredResume } = await import("./resume.server");
+    try {
+      const result = await analyzeStoredResume(context.supabase, context.userId, data.resumeId);
+      console.info("[CareerPilot][analyzeResume] success", {
+        userId: context.userId,
+        atsScore: result.ats_score,
+      });
+      return result;
+    } catch (error) {
+      console.error("[CareerPilot][analyzeResume] failed", {
+        userId: context.userId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
   });

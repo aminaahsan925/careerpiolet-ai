@@ -61,7 +61,10 @@ export function useLatestResume() {
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
-      if (error) throw error;
+      if (error) {
+        console.error("[Resume] useLatestResume query error:", error.message, error);
+        throw error;
+      }
       return (data as ResumeRecord | null) ?? null;
     },
   });
@@ -77,7 +80,10 @@ export function useLatestAnalysis() {
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
-      if (error) throw error;
+      if (error) {
+        console.error("[Resume] useLatestAnalysis query error:", error.message, error);
+        throw error;
+      }
       return data ? normalize(data) : null;
     },
   });

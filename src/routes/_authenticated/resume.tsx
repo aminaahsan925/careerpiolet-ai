@@ -99,8 +99,8 @@ function EmptyStateMessage({ title, description }: { title: string; description:
 function ResumePage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const { data: resume } = useLatestResume();
-  const { data: analysis, isLoading } = useLatestAnalysis();
+  const { data: resume, error: resumeError } = useLatestResume();
+  const { data: analysis, isLoading, error: analysisError } = useLatestAnalysis();
   const upload = useUploadAndAnalyze();
 
   function processFile(file: File | undefined) {
@@ -110,8 +110,11 @@ function ResumePage() {
         toast.success("Resume analyzed successfully!", {
           description: "ATS score, skill extraction, and AI recommendations updated.",
         }),
-      onError: (error) =>
-        toast.error(error instanceof Error ? error.message : "Could not process resume file."),
+      onError: (error) => {
+        const msg = error instanceof Error ? error.message : "Could not process resume file.";
+        console.error("[Resume] upload/analyze failed:", error);
+        toast.error(msg);
+      },
     });
   }
 
