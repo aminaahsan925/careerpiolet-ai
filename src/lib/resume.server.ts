@@ -679,13 +679,28 @@ export async function analyzeStoredResume(
   const rawRoleMatches = parsed["role_matches"];
   const roleMatches = Array.isArray(rawRoleMatches)
     ? rawRoleMatches
-        .filter((item): item is { role: string; match: number } =>
-          Boolean(
-            item &&
-            typeof item === "object" &&
-            typeof (item as Record<string, unknown>)["role"] === "string",
-          ),
-        )
+        .filter((item): item is { role: string; match: number } => {
+          if (!item || typeof item !== "object") return false;
+          const rec = item as Record<string, unknown>;
+          if (typeof rec["role"] !== "string") return false;
+          // AI models sometimes return strings like "High (≈80%)" — coerce to a number.
+          const m = rec["match"];
+          return typeof m === "number" || typeof m === "string";
+        })
+        .map((item) => {
+          const raw = (item as Record<string, unknown>)["match"];
+          let match: number;
+          if (typeof raw === "number") {
+            match = raw;
+          } else if (typeof raw === "string") {
+            // Try to extract a number from strings like "80%", "≈80%", "High (≈80%)"
+            const extracted = raw.match(/(\d+)/);
+            match = extracted ? parseInt(extracted[1], 10) : 0;
+          } else {
+            match = 0;
+          }
+          return { role: (item as Record<string, unknown>)["role"] as string, match: Math.max(0, Math.min(100, Math.round(match))) };
+        })
         .slice(0, 6)
     : [];
   const result = {
@@ -695,7 +710,7 @@ export async function analyzeStoredResume(
     job_description: null,
     ats_score: formatScore,
     resume_score: formatScore,
-    career_match: roleMatches[0]?.match ?? formatScore,
+    career_match: Math.max(0, Math.min(100, roleMatches[0]?.match ?? formatScore)),
     verdict:
       typeof parsed["verdict"] === "string"
         ? parsed["verdict"]
